@@ -1,31 +1,81 @@
-import * as React from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { Badge } from "@/components/ui/badge";
+import { VisualizationToolbar } from "./VisualizationToolbar";
 import { VisualizationFallback } from "./VisualizationFallback";
-import { RefreshCw } from "lucide-react";
+import type { VisualizationSpec } from "@/features/visualization/schema";
+import {
+  CANONICAL_2D_DEMO_SPEC,
+  CANONICAL_3D_DEMO_SPEC,
+} from "@/features/visualization/presets/canonical-presets";
+import { useVisualizerStore } from "@/features/visualization/store/visualizer-store";
+
+// Dynamic import of the R3F Canvas and Renderer to ensure clean client-side WebGL mounting
+const LinearAlgebraCanvas = dynamic(
+  () =>
+    import("@/features/visualization/engine/LinearAlgebraCanvas").then(
+      (m) => m.LinearAlgebraCanvas
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <VisualizationFallback
+        title="Loading Visualization Engine..."
+        type="vector"
+        dimension={2}
+      />
+    ),
+  }
+);
+
+const VisualizationRenderer = dynamic(
+  () =>
+    import("@/features/visualization/engine/VisualizationRenderer").then(
+      (m) => m.VisualizationRenderer
+    ),
+  { ssr: false }
+);
 
 interface VisualizationContainerProps {
   title?: string;
   presetId?: string;
   type?: string;
   dimension?: 2 | 3;
-  children?: React.ReactNode;
+  spec?: VisualizationSpec;
 }
 
 export function VisualizationContainer({
   title = "Geometric Visualization",
   presetId,
-  type = "matrix-transformation",
-  dimension = 2,
-  children,
+  dimension: initialDimension = 2,
+  spec: initialSpec,
 }: VisualizationContainerProps) {
+  const [mounted, setMounted] = useState(false);
+  const storeDimension = useVisualizerStore((s) => s.dimension);
+  const setStoreDimension = useVisualizerStore((s) => s.setDimension);
+
+  useEffect(() => {
+    setMounted(true);
+    setStoreDimension(initialDimension);
+  }, [initialDimension, setStoreDimension]);
+
+  // Determine active spec based on dimension toggle
+  const activeSpec: VisualizationSpec =
+    initialSpec ??
+    (storeDimension === 3 ? CANONICAL_3D_DEMO_SPEC : CANONICAL_2D_DEMO_SPEC);
+
+  const displayTitle = activeSpec.metadata?.title ?? title;
+
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 shadow-sm backdrop-blur-sm">
-      {/* Visualizer header */}
-      <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+    <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 shadow-sm backdrop-blur-sm space-y-3">
+      {/* Header Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-800">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold text-slate-100">{title}</h3>
+          <h3 className="text-sm font-semibold text-slate-100">{displayTitle}</h3>
           <Badge variant="accent" className="text-[10px] uppercase">
-            {dimension}D Canvas
+            {storeDimension}D Canvas
           </Badge>
           {presetId && (
             <span className="font-mono text-[10px] text-slate-500 hidden sm:inline">
@@ -33,20 +83,28 @@ export function VisualizationContainer({
             </span>
           )}
         </div>
-        <button
-          disabled
-          className="flex items-center gap-1 text-xs text-slate-500 cursor-not-allowed"
-          title="Reset scene controls (Active in Milestone 2)"
-        >
-          <RefreshCw className="h-3 w-3" />
-          <span>Reset</span>
-        </button>
       </div>
 
-      {/* Canvas Area */}
-      <div className="relative min-h-[300px] w-full rounded-lg overflow-hidden flex items-center justify-center">
-        {children || (
-          <VisualizationFallback title={title} type={type} dimension={dimension} />
+      {/* Interactive Controls Toolbar */}
+      <VisualizationToolbar
+        showAnimationControls={Boolean(activeSpec.animation?.enabled)}
+      />
+
+      {/* 3D / 2D WebGL Canvas Area */}
+      <div className="relative min-h-[440px] h-[460px] w-full rounded-lg overflow-hidden border border-slate-800/80 bg-slate-950">
+        {!mounted ? (
+          <VisualizationFallback
+            title={displayTitle}
+            dimension={storeDimension}
+          />
+        ) : (
+          <LinearAlgebraCanvas
+            dimension={storeDimension}
+            cameraMode={activeSpec.camera?.mode}
+            fallbackTitle={displayTitle}
+          >
+            <VisualizationRenderer spec={activeSpec} />
+          </LinearAlgebraCanvas>
         )}
       </div>
     </div>

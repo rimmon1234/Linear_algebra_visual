@@ -1,21 +1,21 @@
 # IMPLEMENTATION_STATUS.md
 
 **Interactive Linear Algebra Learning Platform — Status & Roadmap Tracking**  
-*Last Updated: 2026-08-30 | Phase 1 Foundation & Verification Complete*
+*Last Updated: 2026-08-30 | Phase 2 Visualization Foundation Complete*
 
 ---
 
 ## 1. Current Repository State
 
-- **Application Status:** Next.js 15 App Router application with data-driven routing, full curriculum registry, responsive sidebar/drawer, and verified foundation.
-- **Repository Architecture:** Clean layer separation confirmed (`app/`, `components/`, `content/`, `features/`, `lib/`, `tests/`).
+- **Application Status:** Next.js 15 App Router application with interactive Three.js & React Three Fiber geometric visualization foundation, data-driven routing, full curriculum registry, and responsive navigation shell.
+- **Repository Architecture:** Clean layer separation confirmed (`app/`, `components/`, `content/`, `features/`, `lib/`, `tests/`, `docs/`).
 - **Tooling & Package Manager:** `npm@11.13.0` (pinned via ADR-014), `package-lock.json` committed.
 - **Quality Gates:** 
   - `npm run typecheck`: 0 errors.
   - `npm run lint`: 0 errors/warnings.
-  - `npm test`: 13 Vitest unit tests passing.
+  - `npm test`: 27 Vitest unit tests passing across 5 test suites.
   - `npm run build`: Production build optimized and compiled.
-  - `npm run test:e2e`: 6 Playwright E2E test suites passing across desktop, tablet, and mobile viewports.
+  - `npm run test:e2e`: 8 Playwright E2E test suites passing across desktop, tablet, and mobile viewports.
   - `npm run verify`: Full aggregate verification gate passed.
 
 ---
@@ -25,50 +25,33 @@
 All 22 project specification documents and ADR records are active and validated:
 
 - `AGENTS.md` / `agents.md` — Active & followed.
-- `PROJECT_RULES.md` — Active & followed.
-- `PRODUCT_SPEC.md` — Active & followed.
-- `TECH_STACK.md` — Active & followed (`npm` pinned per ADR-014).
-- `CURRICULUM_SPEC.md` — Active & followed (all 4 modules & 33 topics registered).
-- `CONTENT_AUTHORING_SPEC.md` — Active & followed.
-- `MATH_ENGINE_SPEC.md` — Active & followed.
-- `NUMERICAL_POLICY.md` — Sole authority for numerical tolerances (ADR-009).
-- `VISUALIZATION_SPEC.md` — Active & followed (schemas validated).
-- `AI_SPEC.md` — Active (implementation deferred to Milestone 6).
-- `API_CONTRACT.md` — Active.
-- `DATABASE_SPEC.md` — Active (persistence deferred to Milestone 10).
-- `SECURITY_SPEC.md` — Active.
-- `UX_SPEC.md` — Active.
-- `OBSERVABILITY_SPEC.md` — Active.
-- `DEFINITION_OF_DONE.md` — Active.
-- `TEST_MATRIX.md` — Active.
-- `DECISIONS.md` — Active (ADR-001 through ADR-014).
-- `TASKS.md` — Active (Phase 0 & Phase 1 marked complete and verified).
-- `VERTICAL_SLICE.md` — Active.
-- `PRODUCT_CHECKLIST.md` — Active.
-- `implementation.md` — Master architecture baseline.
+- `docs/architecture/PROJECT_RULES.md` — Active & followed.
+- `docs/product/PRODUCT_SPEC.md` — Active & followed.
+- `docs/architecture/TECH_STACK.md` — Active & followed (`npm` pinned per ADR-014).
+- `docs/curriculum/CURRICULUM_SPEC.md` — Active & followed (all 4 modules & 33 topics registered).
+- `docs/curriculum/CONTENT_AUTHORING_SPEC.md` — Active & followed.
+- `docs/mathematics/MATH_ENGINE_SPEC.md` — Active & followed.
+- `docs/mathematics/NUMERICAL_POLICY.md` — Sole authority for numerical tolerances (ADR-009).
+- `docs/visualization/VISUALIZATION_SPEC.md` — Active & followed (schemas, primitives, and coordinate model verified).
+- `docs/ai/AI_SPEC.md` — Active (implementation deferred to Milestone 6).
+- `docs/backend/API_CONTRACT.md` — Active.
+- `docs/backend/DATABASE_SPEC.md` — Active (persistence deferred to Milestone 10).
+- `docs/backend/SECURITY_SPEC.md` — Active.
+- `docs/product/UX_SPEC.md` — Active.
+- `docs/backend/OBSERVABILITY_SPEC.md` — Active.
+- `docs/development/DEFINITION_OF_DONE.md` — Active.
+- `docs/development/TEST_MATRIX.md` — Active.
+- `docs/architecture/DECISIONS.md` — Active (ADR-001 through ADR-014).
+- `docs/development/TASKS.md` — Active (Phase 0, Phase 1, and Phase 2 verified complete).
+- `docs/development/VERTICAL_SLICE.md` — Active.
+- `docs/product/PRODUCT_CHECKLIST.md` — Active.
+- `docs/architecture/IMPLEMENTATION.md` — Master architecture baseline.
 
 ---
 
-## 3. Foundation Verification Summary (Phase 1 Final Pass)
+## 3. Completed Milestones
 
-All items from the Phase 1 verification checklist were manually and automatically verified:
-1. **`/` (Landing Page):** Loads cleanly with hero section and 4 curriculum module cards.
-2. **`/learn` (Curriculum Index):** Displays all 4 modules and their 33 topics with estimated hours.
-3. **Module Pages:** All 4 module pages (`/learn/matrices-eigenvalues-decompositions`, `/learn/vector-spaces`, `/learn/inner-product-spaces`, `/learn/linear-transformations`) render dynamically from the registry with learning objectives and topic lists.
-4. **Topic Pages:** Topic pages across all 4 modules render breadcrumbs, `TopicHeader`, `LearningObjectives`, `VisualizationContainer` (with fallback shell), and structured sections.
-5. **Previous / Next Navigation:** Successfully transitions between topics, including across module boundaries (Module 1 -> Module 2).
-6. **Desktop Sidebar:** Interactive collapsible modules and active topic highlight.
-7. **Mobile Drawer Navigation:** Responsive menu trigger and drawer navigation tested and passing at 390px viewport.
-8. **Tablet & Responsive Layout:** Verified at 768px and 1280px viewports with zero horizontal scroll or layout overflow.
-9. **Dark Theme & Accessibility:** Consistent slate-950/indigo dark palette, semantic heading hierarchy, accessible button labels, and `suppressHydrationWarning` on root layout.
-10. **Console Health:** Zero hydration errors, zero WebGL crashes, zero unhandled rejections.
-11. **Boundary Adherence:** Math engine boundary (`Result<T, MathError>`), visualization schema (`VisualizationSpecSchema`), and curriculum queries are completely decoupled from UI code.
-
----
-
-## 4. Completed Milestones
-
-### Phase 0: Repository Foundation — **COMPLETE**
+### Phase 0: Repository Foundation — **COMPLETE & VERIFIED**
 - Next.js 15 App Router project with TypeScript strict mode.
 - Tailwind CSS styling and core UI components.
 - Vitest unit testing harness.
@@ -81,27 +64,44 @@ All items from the Phase 1 verification checklist were manually and automaticall
 - Generic dynamic routing shell (`/learn/[moduleSlug]/[topicSlug]`).
 - Responsive curriculum sidebar and mobile navigation drawer.
 - Structured topic page framework with `TopicHeader`, `LearningObjectives`, `VisualizationContainer`, and `TopicNavigation`.
-- Unit tests verifying registry integrity, prerequisite acyclicity, topic uniqueness, and numerical tolerance adherence.
-- Playwright E2E tests verifying complete navigation flows and responsive behavior.
+
+### Phase 2: Visualization Foundation — **COMPLETE & VERIFIED**
+- Three.js (`three`), React Three Fiber (`@react-three/fiber`), Drei (`@react-three/drei`), and Zustand (`zustand`) integration.
+- Standard right-handed Cartesian coordinate system (+X red, +Y green in 2D; +X red, +Y green, +Z blue in 3D per ADR-011).
+- Reusable geometric primitives:
+  - `Axes`: 2D/3D colored coordinate axes with arrowheads and axis letter tags.
+  - `Grid`: 2D XY coordinate grid and 3D ground plane.
+  - `Point`: Core sphere/disk with halo and coordinates.
+  - `Vector`: Shaft + cone tip with safe orientation math (zero vector protection without `NaN`/`Infinity`).
+  - `Line`: Segment / infinite trajectory line.
+  - `Plane`: Unambiguous plane representation via `origin + normal` or `origin + [v1, v2]` with collinearity protection.
+  - `Label`: Unified billboarded math text overlay.
+- Camera controls: Orthographic 2D, Perspective & Orthographic 3D with smooth reset listener.
+- Zustand store (`useVisualizerStore`) strictly managing UI, camera reset, active tool, and playback state without encroaching on mathematical domain truth.
+- Lightweight Scene Model compiler (`buildSceneModel`).
+- Canonical 2D and 3D demonstration presets (`CANONICAL_2D_DEMO_SPEC`, `CANONICAL_3D_DEMO_SPEC`).
+- WebGL capability detection and context loss resilience.
+- 27 unit tests & 8 Playwright E2E tests passing.
 
 ---
 
-## 5. Upcoming Milestones
+## 4. Upcoming Milestones
 
-### Phase 2: Visualization Foundation (Ready to begin upon instruction)
-- React Three Fiber / Three.js canvas wrapper with WebGL detection and fallback.
-- Camera controllers (orbit, zoom, reset).
-- Reusable primitives (`Axes`, `Grid`, `Vector`, `Point`, `Line`, `Plane`, `Basis`, `Labels`).
-- Declarative `VisualizationSpec` renderer and Zustand visualizer store.
-
-### Phase 3: Matrix / Vector Math Engine Foundation
+### Phase 3: Matrix / Vector Math Engine Foundation (Next Step)
 - Pure TypeScript vector module (addition, subtraction, scalar multiplication, dot product, norm, normalization, angle, cross product).
 - Pure TypeScript matrix module (addition, multiplication, transpose, determinant, matrix-vector product, rank, RREF, inverse).
+- Numerical policies strictly derived from `NUMERICAL_POLICY.md` with `Result<T, MathError>` error handling (ADR-013).
 - Comprehensive unit test suite covering boundary cases and numerical thresholds.
+
+### Phase 4: First Complete Vertical Slice (2D Matrix Transformation)
+- Interactive 2D Matrix Transformation lesson and experiment scene.
+- Animated transformation from Identity $I$ to matrix $A$.
+- Interactive matrix and vector inputs.
+- Integrated practice problem with verification.
 
 ---
 
-## 6. Documented Architecture Decisions (ADR Summary)
+## 5. Documented Architecture Decisions (ADR Summary)
 
 1. **ADR-001:** Data-Driven Curriculum.
 2. **ADR-002:** Math / Rendering Separation.

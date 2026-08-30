@@ -35,19 +35,19 @@ A phase may be split into smaller agent tasks.
 
 # Phase 2 — Visualization Foundation
 
-- [ ] Add Three.js/R3F canvas.
-- [ ] Add camera controls.
-- [ ] Add axes.
-- [ ] Add grid.
-- [ ] Add point primitive.
-- [ ] Add vector primitive.
-- [ ] Add labels.
-- [ ] Add reset controls.
-- [ ] Add 2D/3D scene abstraction.
-- [ ] Add visualization schema.
-- [ ] Add visualization-spec validation.
+- [x] Add Three.js/R3F canvas.
+- [x] Add camera controls.
+- [x] Add axes.
+- [x] Add grid.
+- [x] Add point primitive.
+- [x] Add vector primitive.
+- [x] Add labels.
+- [x] Add reset controls.
+- [x] Add 2D/3D scene abstraction.
+- [x] Add visualization schema.
+- [x] Add visualization-spec validation.
 
-**Exit condition:** a generic validated visualization spec can render a basic scene.
+**Exit condition:** a generic validated visualization spec can render a basic scene. (VERIFIED)
 
 # Phase 3 — Matrix/Vector Math Foundation
 
