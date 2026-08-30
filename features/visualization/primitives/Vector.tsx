@@ -16,6 +16,7 @@ export interface VectorProps {
   visible?: boolean;
   draggable?: boolean;
   onDrag?: (newVal: Vector3Tuple) => void;
+  lod?: "tick" | "secondary" | "primary" | "always";
 }
 
 export function Vector({
@@ -26,6 +27,7 @@ export function Vector({
   label,
   showCoordinates = false,
   visible = true,
+  lod = "secondary",
 }: VectorProps) {
   if (!visible) return null;
 
@@ -41,6 +43,7 @@ export function Vector({
     shaftRadius,
     coneLength,
     coneRadius,
+    direction,
   } = orientation;
 
   const [ox, oy, oz] = orientation.origin;
@@ -52,6 +55,13 @@ export function Vector({
     ? coordText
     : "";
 
+  // Smart dynamic label offset calculated outward along the vector's pointing direction
+  const labelOffset: [number, number, number] = useMemo(() => {
+    const [dx, dy, dz] = direction;
+    const radial = 0.32;
+    return [dx * radial, dy * radial, dz * radial];
+  }, [direction]);
+
   // If vector is mathematically zero, render only a small origin dot without broken geometries
   if (isZero) {
     return (
@@ -60,7 +70,7 @@ export function Vector({
           <sphereGeometry args={[0.06, 16, 16]} />
           <meshBasicMaterial color={color} />
         </mesh>
-        {labelText && <Label text={`${labelText} (0)`} position={[0, 0.2, 0]} color={color} />}
+        {labelText && <Label text={`${labelText} (0)`} position={[0, 0.2, 0]} color={color} lod={lod} />}
       </group>
     );
   }
@@ -100,13 +110,14 @@ export function Vector({
         )}
       </group>
 
-      {/* Label at arrowhead tip */}
+      {/* Dynamic outward radial label at arrowhead tip */}
       {labelText && (
         <Label
           text={labelText}
           position={[hx, hy, hz]}
-          offset={[0.1, 0.15, 0]}
+          offset={labelOffset}
           color={color}
+          lod={lod}
         />
       )}
     </group>

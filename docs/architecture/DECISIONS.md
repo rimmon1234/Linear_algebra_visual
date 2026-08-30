@@ -116,6 +116,26 @@ Build complete end-to-end slices before expanding horizontally across the curric
 
 **Consequences:** All installation, execution, and CI scripts must use `npm` (`npm install`, `npm test`, `npm run build`, etc.). Alternative package managers are not permitted.
 
+## ADR-015 — Matrix Transformation Linear Interpolation Strategy for Pedagogical Animations
+
+**Status:** Accepted
+
+**Context:** Animating the transition from the standard coordinate system to a transformed matrix state ($I \to A$) requires a mathematically coherent trajectory that can be scrubbed and visualized continuously.
+
+**Decision:** Define the time-dependent operator as $A(t) = (1 - t)I + tA$ for $t \in [0, 1]$.
+* **Preserved Invariants:**
+  * Linearity is strictly preserved for every intermediate $t \in [0, 1]$ (i.e. $A(t)(c u + v) = c A(t)u + A(t)v$).
+  * The origin $[0, 0]^T$ remains stationary at all times ($A(t) \mathbf{0} = \mathbf{0}$).
+  * Straight parallel grid lines remain straight and parallel at every intermediate frame.
+* **Important Mathematical Caveats:**
+  * Invertibility is NOT guaranteed at intermediate times (e.g. reflections or shears may pass through singular rank-deficient states where $\det(A(t)) = 0$).
+  * Orientation and determinant sign may change continuously during the transition.
+  * The visual area is defined strictly as $\text{area}(t) = |\det(A(t))|$, derived from the mathematical model rather than pixel estimations.
+
+**Reason:** Provides an intuitive, mathematically grounded animation where each intermediate frame represents a valid linear operator without fabricating artificial curves or non-linear screen-space offsets.
+
+**Consequences:** The visualization model, grid primitive, and basis vector renderers directly consume $A(t)$ driven by the animation progress state.
+
 ## ADR Template
 
 When adding a decision:

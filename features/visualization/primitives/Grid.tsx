@@ -10,6 +10,10 @@ interface GridProps {
   divisions?: number;
 }
 
+/**
+ * Permanent Reference Cartesian Grid Primitive (Fixed World Frame)
+ * Always strictly horizontal and vertical. Never rotates, shears, or translates.
+ */
 export function Grid({
   dimension = 2,
   size = 16,
@@ -33,11 +37,11 @@ export function Grid({
       const isMajor = Math.round(i) % 2 === 0;
       const target = isMajor ? majorPoints : minorPoints;
 
-      // Vertical line (parallel to Y axis)
+      // Vertical line (parallel to Y axis: x = constant, y spans [-half, half])
       target.push(new THREE.Vector3(i, -half, -0.01));
       target.push(new THREE.Vector3(i, half, -0.01));
 
-      // Horizontal line (parallel to X axis)
+      // Horizontal line (parallel to X axis: y = constant, x spans [-half, half])
       target.push(new THREE.Vector3(-half, i, -0.01));
       target.push(new THREE.Vector3(half, i, -0.01));
     }
@@ -48,7 +52,7 @@ export function Grid({
     if (majorPoints.length > 0) {
       const majorGeo = new THREE.BufferGeometry().setFromPoints(majorPoints);
       const majorMat = new THREE.LineBasicMaterial({
-        color: "#334155", // Slate-700
+        color: primary,
         transparent: true,
         opacity: 0.8,
       });
@@ -59,7 +63,7 @@ export function Grid({
     if (minorPoints.length > 0) {
       const minorGeo = new THREE.BufferGeometry().setFromPoints(minorPoints);
       const minorMat = new THREE.LineBasicMaterial({
-        color: "#1e293b", // Slate-800
+        color: secondary,
         transparent: true,
         opacity: 0.5,
       });
@@ -67,13 +71,13 @@ export function Grid({
     }
 
     return group;
-  }, [dimension, size, divisions]);
+  }, [dimension, size, divisions, primary, secondary]);
 
   if (dimension === 2 && grid2DObject) {
     return <primitive object={grid2DObject} />;
   }
 
-  // 3D Grid helper on the ground plane (XY or XZ)
+  // 3D Grid helper on the ground plane
   return (
     <group name="coordinate-grid-3d">
       <gridHelper

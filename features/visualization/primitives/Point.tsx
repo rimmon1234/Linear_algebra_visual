@@ -13,6 +13,7 @@ interface PointProps {
   label?: string;
   showCoordinates?: boolean;
   visible?: boolean;
+  lod?: "tick" | "secondary" | "primary" | "always";
 }
 
 export function Point({
@@ -23,6 +24,7 @@ export function Point({
   label,
   showCoordinates = false,
   visible = true,
+  lod = "secondary",
 }: PointProps) {
   if (!visible) return null;
 
@@ -56,7 +58,7 @@ export function Point({
       </mesh>
 
       {labelText && (
-        <Label text={labelText} position={[0, radius * 1.8, 0]} color={color} />
+        <Label text={labelText} position={[0, radius * 1.8, 0]} color={color} lod={lod} />
       )}
     </group>
   );

@@ -57,7 +57,7 @@ export function LinearAlgebraCanvas({
   const isOrtho = is2D || cameraMode === "orthographic";
 
   return (
-    <div className="relative w-full h-full min-h-[440px] rounded-lg overflow-hidden bg-slate-950/80">
+    <div className="relative w-full h-full min-h-[480px] rounded-lg overflow-hidden bg-slate-950/80">
       <Canvas
         dpr={[1, 2]} // Crisp rendering on Retina without mobile GPU penalty
         gl={{

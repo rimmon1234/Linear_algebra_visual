@@ -41,8 +41,8 @@ export default function LearnLayout({
         <Sidebar modules={modules} />
       </div>
 
-      {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto px-4 py-8 sm:px-8 lg:px-12 max-w-4xl mx-auto w-full">
+      {/* Main Content Area: Expansive widescreen layout with balanced padding */}
+      <main className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 lg:px-8 max-w-[1560px] mx-auto w-full">
         {children}
       </main>
     </div>
