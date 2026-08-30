@@ -1,10 +1,11 @@
 import { create } from "zustand";
-import type { VisualizationSpec } from "../schema";
 
 export interface VisualizerState {
   // Dimension & Camera
   dimension: 2 | 3;
   cameraResetCounter: number;
+  fitSceneCounter: number;
+  fitSceneBounds: { xMin: number; xMax: number; yMin: number; yMax: number } | null;
   activeTool: "select" | "pan" | "orbit";
 
   // Selection & Interactivity
@@ -21,6 +22,7 @@ export interface VisualizerState {
 
   // Actions
   triggerCameraReset: () => void;
+  triggerFitScene: (bounds?: { xMin: number; xMax: number; yMin: number; yMax: number }) => void;
   setDimension: (dimension: 2 | 3) => void;
   setSelectedObjectId: (id: string | null) => void;
   setHoveredObjectId: (id: string | null) => void;
@@ -39,6 +41,8 @@ export interface VisualizerState {
 export const useVisualizerStore = create<VisualizerState>((set) => ({
   dimension: 2,
   cameraResetCounter: 0,
+  fitSceneCounter: 0,
+  fitSceneBounds: null,
   activeTool: "select",
   selectedObjectId: null,
   hoveredObjectId: null,
@@ -52,6 +56,12 @@ export const useVisualizerStore = create<VisualizerState>((set) => ({
 
   triggerCameraReset: () =>
     set((state) => ({ cameraResetCounter: state.cameraResetCounter + 1 })),
+
+  triggerFitScene: (bounds) =>
+    set((state) => ({
+      fitSceneCounter: state.fitSceneCounter + 1,
+      fitSceneBounds: bounds ?? null,
+    })),
 
   setDimension: (dimension) => set({ dimension }),
 

@@ -25,6 +25,22 @@ export function LinearAlgebraCanvas({
 
   useEffect(() => {
     setHasWebGL(isWebGLAvailable());
+
+    // Filter Three.js Clock deprecation warning triggered by internal dependencies
+    const origWarn = console.warn;
+    console.warn = (...args: unknown[]) => {
+      if (
+        typeof args[0] === "string" &&
+        args[0].includes("THREE.Clock: This module has been deprecated")
+      ) {
+        return;
+      }
+      origWarn.apply(console, args);
+    };
+
+    return () => {
+      console.warn = origWarn;
+    };
   }, []);
 
   if (!hasWebGL) {
@@ -41,10 +57,15 @@ export function LinearAlgebraCanvas({
   const isOrtho = is2D || cameraMode === "orthographic";
 
   return (
-    <div className="relative w-full h-full min-h-[440px] rounded-lg overflow-hidden bg-slate-950/80">
+    <div className="relative w-full h-full min-h-[480px] rounded-lg overflow-hidden bg-slate-950/80">
       <Canvas
         dpr={[1, 2]} // Crisp rendering on Retina without mobile GPU penalty
-        gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true, powerPreference: "high-performance" }}
+        gl={{
+          antialias: true,
+          alpha: true,
+          preserveDrawingBuffer: true,
+          powerPreference: "high-performance",
+        }}
       >
         {/* Dynamic Default Camera Switcher without unmounting WebGL context */}
         {is2D ? (

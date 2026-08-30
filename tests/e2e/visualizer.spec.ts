@@ -12,7 +12,7 @@ test.describe("Linear Algebra Platform - Phase 2 Visualizer Foundation", () => {
     });
 
     await page.goto(
-      "/learn/matrices-eigenvalues-decompositions/characteristic-equations"
+      "/learn/vector-spaces/vector-spaces"
     );
 
     // Verify visualizer container title
@@ -54,7 +54,7 @@ test.describe("Linear Algebra Platform - Phase 2 Visualizer Foundation", () => {
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(
-      "/learn/matrices-eigenvalues-decompositions/characteristic-equations"
+      "/learn/vector-spaces/vector-spaces"
     );
 
     const canvas = page.locator("canvas");

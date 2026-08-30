@@ -57,36 +57,42 @@ export function Axes({
     return new THREE.Line(geo, mat);
   }, [bounds.zMin, bounds.zMax, zAxis]);
 
-  // Numeric tick marks along X axis (e.g. -4, -2, 2, 4)
+  // Dynamic numeric tick marks along X axis spanning full bounds
   const xTicks = useMemo(() => {
     const ticks: number[] = [];
-    for (let x = -4; x <= 4; x += 2) {
+    const min = Math.ceil(bounds.xMin + 1);
+    const max = Math.floor(bounds.xMax - 1);
+    const step = max > 10 ? 4 : 2;
+    for (let x = Math.ceil(min / step) * step; x <= max; x += step) {
       if (x !== 0) ticks.push(x);
     }
     return ticks;
-  }, []);
+  }, [bounds.xMin, bounds.xMax]);
 
-  // Numeric tick marks along Y axis (e.g. -4, -2, 2, 4)
+  // Dynamic numeric tick marks along Y axis spanning full bounds
   const yTicks = useMemo(() => {
     const ticks: number[] = [];
-    for (let y = -4; y <= 4; y += 2) {
+    const min = Math.ceil(bounds.yMin + 1);
+    const max = Math.floor(bounds.yMax - 1);
+    const step = max > 10 ? 4 : 2;
+    for (let y = Math.ceil(min / step) * step; y <= max; y += step) {
       if (y !== 0) ticks.push(y);
     }
     return ticks;
-  }, []);
+  }, [bounds.yMin, bounds.yMax]);
 
-  // Ticks geometry
+  // Dynamic Ticks geometry
   const tickGeometry = useMemo(() => {
     const points: THREE.Vector3[] = [];
     // X ticks
     for (const x of xTicks) {
-      points.push(new THREE.Vector3(x, -0.1, 0));
-      points.push(new THREE.Vector3(x, 0.1, 0));
+      points.push(new THREE.Vector3(x, -0.08, 0));
+      points.push(new THREE.Vector3(x, 0.08, 0));
     }
     // Y ticks
     for (const y of yTicks) {
-      points.push(new THREE.Vector3(-0.1, y, 0));
-      points.push(new THREE.Vector3(0.1, y, 0));
+      points.push(new THREE.Vector3(-0.08, y, 0));
+      points.push(new THREE.Vector3(0.08, y, 0));
     }
     const geo = new THREE.BufferGeometry().setFromPoints(points);
     const mat = new THREE.LineBasicMaterial({ color: tick });
@@ -97,7 +103,7 @@ export function Axes({
     <group name="coordinate-axes">
       {/* Origin Point Marker */}
       <mesh position={[0, 0, 0]}>
-        <sphereGeometry args={[0.06, 16, 16]} />
+        <sphereGeometry args={[0.05, 16, 16]} />
         <meshBasicMaterial color={origin} />
       </mesh>
 
@@ -105,22 +111,22 @@ export function Axes({
       <primitive object={xLineObj} />
       {/* +X Arrow Cone */}
       <mesh position={[bounds.xMax, 0, 0]} rotation={[0, 0, -Math.PI / 2]}>
-        <coneGeometry args={[0.1, 0.3, 16]} />
+        <coneGeometry args={[0.08, 0.25, 16]} />
         <meshBasicMaterial color={xAxis} />
       </mesh>
       {showLabels && (
-        <Label text="+x" position={[bounds.xMax + 0.3, 0, 0]} color={xAxis} />
+        <Label text="+x" position={[bounds.xMax + 0.3, 0, 0]} color={xAxis} minimal lod="primary" />
       )}
 
       {/* Y Axis Line */}
       <primitive object={yLineObj} />
       {/* +Y Arrow Cone */}
       <mesh position={[0, bounds.yMax, 0]}>
-        <coneGeometry args={[0.1, 0.3, 16]} />
+        <coneGeometry args={[0.08, 0.25, 16]} />
         <meshBasicMaterial color={yAxis} />
       </mesh>
       {showLabels && (
-        <Label text="+y" position={[0, bounds.yMax + 0.3, 0]} color={yAxis} />
+        <Label text="+y" position={[0, bounds.yMax + 0.3, 0]} color={yAxis} minimal lod="primary" />
       )}
 
       {/* Z Axis Line (3D Mode) */}
@@ -129,16 +135,16 @@ export function Axes({
           <primitive object={zLineObj} />
           {/* +Z Arrow Cone */}
           <mesh position={[0, 0, bounds.zMax ?? 6]} rotation={[Math.PI / 2, 0, 0]}>
-            <coneGeometry args={[0.1, 0.3, 16]} />
+            <coneGeometry args={[0.08, 0.25, 16]} />
             <meshBasicMaterial color={zAxis} />
           </mesh>
           {showLabels && (
-            <Label text="+z" position={[0, 0, (bounds.zMax ?? 6) + 0.3]} color={zAxis} />
+            <Label text="+z" position={[0, 0, (bounds.zMax ?? 6) + 0.3]} color={zAxis} minimal lod="primary" />
           )}
         </>
       )}
 
-      {/* Numeric Ticks & Labels */}
+      {/* Subtle, unboxed Numeric Tick Labels (disappear smoothly on zoom-out) */}
       {showTicks && (
         <>
           <primitive object={tickGeometry} />
@@ -146,20 +152,24 @@ export function Axes({
             <Label
               key={`x-tick-${x}`}
               text={`${x}`}
-              position={[x, -0.3, 0]}
+              position={[x, -0.25, 0]}
               color={tickLabel}
               offset={[0, 0, 0]}
-              className="text-[9px] px-1 py-0 opacity-80"
+              minimal
+              lod="tick"
+              className="text-[9px] text-slate-500 font-mono select-none"
             />
           ))}
           {yTicks.map((y) => (
             <Label
               key={`y-tick-${y}`}
               text={`${y}`}
-              position={[-0.35, y, 0]}
+              position={[-0.3, y, 0]}
               color={tickLabel}
               offset={[0, 0, 0]}
-              className="text-[9px] px-1 py-0 opacity-80"
+              minimal
+              lod="tick"
+              className="text-[9px] text-slate-500 font-mono select-none"
             />
           ))}
         </>

@@ -20,15 +20,18 @@ export const module4: Module = {
       id: "mod4-linear-transformations",
       moduleId: "module-4",
       slug: "linear-transformations",
-      title: "Linear Transformations",
+      title: "Linear Transformations & Matrix Maps",
       order: 1,
       status: "published",
       difficulty: "introductory",
-      estimatedMinutes: 20,
-      description: "Understand functions between vector spaces that preserve vector addition and scalar multiplication, transforming grids and coordinate lines uniformly.",
+      estimatedMinutes: 25,
+      description:
+        "Understand functions between vector spaces that preserve vector addition and scalar multiplication, transforming coordinate grids and tracking basis vector images.",
       learningObjectives: [
-        "Test functions for linearity.",
-        "Visualize linear transformations as grid deformations where origin stays fixed and parallel grid lines remain parallel and evenly spaced.",
+        "Test and verify the fundamental linearity conditions: additivity and homogeneity.",
+        "Recognize linear transformations geometrically as coordinate grid deformations where origin remains fixed and parallel grid lines remain straight and parallel.",
+        "Connect matrix columns directly to the transformed images of standard basis vectors: A = [Ae1  Ae2].",
+        "Interpret the 2x2 determinant det(A) as the signed area scaling factor of the plane.",
       ],
       prerequisites: [],
       visualizationTypes: ["linear-transformation", "matrix-transformation"],
@@ -37,22 +40,114 @@ export const module4: Module = {
           id: "sec-why",
           title: "Why This Matters",
           type: "why-it-matters",
-          content: "Linear transformations are the fundamental operations of linear algebra, modeling rotations, reflections, projections, shears, and scalings in geometry and physics.",
+          content:
+            "Linear transformations are the universal language of spatial manipulation across modern science. In 3D computer graphics, every camera rotation, object scaling, and character animation in video games is executed via 4x4 matrix transformations. In physics, Einstein's special relativity formulates spacetime Lorentz transformations as linear operators. In data science and AI, neural network layers apply successive matrix transformations to high-dimensional feature spaces.",
+          callout: {
+            type: "tip",
+            text: "Every 2D linear transformation is completely and uniquely determined by where it sends just two vectors: the standard basis vectors e1 and e2.",
+          },
         },
         {
           id: "sec-def",
-          title: "Definition of Linearity",
+          title: "Formal Definition of Linearity",
           type: "definition",
-          content: "A mapping T: V -> W between vector spaces is linear if for all u, v in V and scalars c in F: T(u + v) = T(u) + T(v) and T(c u) = c T(u).",
-          formula: "T(c\\mathbf{u} + \\mathbf{v}) = cT(\\mathbf{u}) + T(\\mathbf{v})",
+          content:
+            "A function T: V -> W between vector spaces over a field F is a linear transformation if it satisfies two core axioms for all vectors u, v in V and all scalars c in F:\n\n1. Additivity: T(u + v) = T(u) + T(v)\n2. Homogeneity: T(c u) = c T(u)\n\nThese two properties can be combined into a single condition: T(c u + v) = c T(u) + T(v). As an immediate consequence, every linear transformation must preserve the origin: T(0) = 0.",
+          formula: "T(c\\mathbf{u} + \\mathbf{v}) = cT(\\mathbf{u}) + T(\\mathbf{v}) \\quad \\text{and} \\quad T(\\mathbf{0}) = \\mathbf{0}",
+        },
+        {
+          id: "sec-intuition",
+          title: "Geometric Intuition: Grid Preservation",
+          type: "intuition",
+          content:
+            "What does a linear transformation look like geometrically? Imagine the 2D Cartesian coordinate grid drawn on a sheet of rubber. When a 2x2 matrix transforms the space:\n\n• The origin [0, 0] never moves.\n• All grid lines remain straight lines (they never bend or curve).\n• All parallel grid lines remain parallel and evenly spaced.\n\nRectangular grid cells deform into parallelograms, but the uniform geometric structure of the space is strictly preserved.",
+          callout: {
+            type: "note",
+            text: "If grid lines curve, or if the origin moves, the transformation is NOT linear.",
+          },
+        },
+        {
+          id: "sec-column-picture",
+          title: "The Column Picture: Columns Are Basis Images",
+          type: "formal-math",
+          content:
+            "The entries of any 2x2 transformation matrix A have a direct, concrete geometric meaning. The first column tells you where the standard basis vector e1 = [1, 0]^T lands, and the second column tells you where e2 = [0, 1]^T lands:\n\nFor any general vector v = [x, y]^T = x e1 + y e2, applying the matrix yields the linear combination:\n\nAv = x(A e1) + y(A e2) = x [a, c]^T + y [b, d]^T = [ax + by, cx + dy]^T.",
+          formula: "A = \\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix} = \\begin{bmatrix} A\\mathbf{e}_1 & A\\mathbf{e}_2 \\end{bmatrix}, \\quad A\\mathbf{v} = x(A\\mathbf{e}_1) + y(A\\mathbf{e}_2)",
+        },
+        {
+          id: "sec-determinant",
+          title: "The Determinant as Area Scaling Factor",
+          type: "geometric-interpretation",
+          content:
+            "The determinant det(A) = ad - bc measures how the matrix scales areas:\n\n• Magnitude |det(A)|: The factor by which every 2D area (such as the unit square) is enlarged or compressed.\n• Sign of det(A): If positive, orientation is preserved (counter-clockwise remains counter-clockwise). If negative, the space has been flipped / reflected across an axis.\n• det(A) = 0: The matrix is singular; it squashes the entire 2D plane down into a 1D line or 0D point, completely destroying area.",
+          formula: "\\text{Area}(A \\cdot \\text{Unit Square}) = |\\det(A)| = |ad - bc|",
+        },
+        {
+          id: "sec-worked-example",
+          title: "Worked Example: Applying a Shear Matrix",
+          type: "worked-example",
+          content:
+            "Let A = [ [1, 1.5], [0, 1] ] and consider the input vector v = [2, 1]^T.\n\n1. Basis images: Ae1 = [1, 0]^T (e1 is unchanged) and Ae2 = [1.5, 1]^T (e2 is shifted horizontally by 1.5).\n2. Transform vector v: Av = [1*(2) + 1.5*(1), 0*(2) + 1*(1)]^T = [3.5, 1]^T.\n3. Compute determinant: det(A) = (1)(1) - (1.5)(0) = 1.0.\n\nGeometric conclusion: The horizontal lines slide sideways, tilting the coordinate grid into parallelograms, but the total area of every shape is strictly preserved (det = 1).",
+          formula: "A\\mathbf{v} = \\begin{bmatrix} 1 & 1.5 \\\\ 0 & 1 \\end{bmatrix} \\begin{bmatrix} 2 \\\\ 1 \\end{bmatrix} = \\begin{bmatrix} 3.5 \\\\ 1 \\end{bmatrix}, \\quad \\det(A) = 1",
+        },
+        {
+          id: "sec-experiment",
+          title: "Interactive Guided Experiments",
+          type: "experiment",
+          content:
+            "Use the visualizer above to experiment with fundamental transformation types:\n\n1. Scaling: Set a = 2, d = 3. Watch the grid expand and observe det(A) = 6.\n2. Reflection: Set a = -1, d = 1. Observe det(A) = -1 with the unit square colored rose to indicate reversed orientation.\n3. Shearing: Set b = 1.5. Notice area stays constant at 1x while grid cells tilt.\n4. Singular Collapse: Set d = 0 for projection onto x-axis. Watch the 2D plane flatten into a single line with area = 0.",
+        },
+        {
+          id: "sec-common-mistakes",
+          title: "Common Misconceptions",
+          type: "common-mistakes",
+          content:
+            "• Misconception 1: Thinking affine shifts like T(x) = Ax + b are linear. They are NOT linear because T(0) = b != 0, violating origin preservation.\n• Misconception 2: Thinking matrix columns are just abstract numbers. The columns ARE the new coordinates of the standard basis vectors.\n• Misconception 3: For a singular 2x2 matrix (det(A)=0), a non-zero vector may map to the zero vector. Invertibility is lost because all vectors in the null space collapse onto the origin.",
+          callout: {
+            type: "warning",
+            text: "For a singular 2x2 matrix (det(A)=0), a non-zero vector may map to the zero vector.",
+          },
+        },
+        {
+          id: "sec-summary",
+          title: "Summary & Key Takeaways",
+          type: "summary",
+          content:
+            "1. Linear maps satisfy T(c u + v) = c T(u) + T(v) and keep the origin [0, 0] fixed.\n2. In coordinates, every 2D linear map is a 2x2 matrix A whose columns are the transformed standard basis vectors Ae1 and Ae2.\n3. Vector multiplication Av is the linear combination of the columns of A weighted by the components of v.\n4. det(A) provides the exact area scaling factor, while its sign dictates spatial orientation.",
         },
       ],
-      examples: [],
-      exercises: [],
+      examples: [
+        {
+          id: "ex-rotation-90",
+          title: "90° Counter-Clockwise Rotation",
+          statement: "Find the matrix that rotates the 2D plane by 90° counter-clockwise.",
+          steps: [
+            "Track standard basis vector e1 = [1, 0]^T: it rotates to [0, 1]^T, giving the first column.",
+            "Track standard basis vector e2 = [0, 1]^T: it rotates to [-1, 0]^T, giving the second column.",
+            "Construct matrix A = [[0, -1], [1, 0]].",
+            "Calculate det(A) = (0)(0) - (-1)(1) = 1 (rigid length and area preserving).",
+          ],
+          solution: "A = [[0, -1], [1, 0]] with det(A) = 1.",
+        },
+      ],
+      exercises: [
+        {
+          id: "exer-1",
+          topicId: "mod4-linear-transformations",
+          difficulty: "introductory",
+          question: "If a 2x2 matrix A transforms e1 to [3, 2]^T and e2 to [-1, 4]^T, what is matrix A and its determinant?",
+          hints: [
+            "Remember the Column Invariant: the columns of A are the transformed basis vectors Ae1 and Ae2.",
+            "Column 1 is [3, 2]^T and Column 2 is [-1, 4]^T.",
+            "Compute determinant using ad - bc.",
+          ],
+          solution: "Matrix A = [[3, -1], [2, 4]] because columns are [3, 2]^T and [-1, 4]^T. det(A) = (3)(4) - (-1)(2) = 12 + 2 = 14.",
+        },
+      ],
       visualizationPresets: [
         {
           presetId: "linear-transformation-2d",
-          title: "2D Grid Transformation",
+          title: "2D Matrix Transformation",
           dimension: 2,
           type: "linear-transformation",
         },

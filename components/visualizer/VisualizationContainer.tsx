@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { Badge } from "@/components/ui/badge";
 import { VisualizationToolbar } from "./VisualizationToolbar";
 import { VisualizationFallback } from "./VisualizationFallback";
+import { MatrixTransformationVisualizer } from "./MatrixTransformationVisualizer";
 import type { VisualizationSpec } from "@/features/visualization/schema";
 import {
   CANONICAL_2D_DEMO_SPEC,
@@ -49,6 +50,7 @@ interface VisualizationContainerProps {
 export function VisualizationContainer({
   title = "Geometric Visualization",
   presetId,
+  type = "vector",
   dimension: initialDimension = 2,
   spec: initialSpec,
 }: VisualizationContainerProps) {
@@ -61,7 +63,18 @@ export function VisualizationContainer({
     setStoreDimension(initialDimension);
   }, [initialDimension, setStoreDimension]);
 
-  // Determine active spec based on dimension toggle
+  // If this is a matrix or linear transformation topic, mount the interactive MatrixTransformationVisualizer
+  const isMatrixTransformation =
+    type === "matrix-transformation" ||
+    type === "linear-transformation" ||
+    initialSpec?.type === "matrix-transformation" ||
+    initialSpec?.type === "linear-transformation";
+
+  if (isMatrixTransformation) {
+    return <MatrixTransformationVisualizer />;
+  }
+
+  // Determine active spec based on dimension toggle for general canonical presets
   const activeSpec: VisualizationSpec =
     initialSpec ??
     (storeDimension === 3 ? CANONICAL_3D_DEMO_SPEC : CANONICAL_2D_DEMO_SPEC);

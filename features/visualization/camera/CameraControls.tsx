@@ -16,6 +16,12 @@ interface CameraControlsProps {
   enablePan?: boolean;
 }
 
+/**
+ * CameraControls Component
+ * Provides user-controlled orbit, pan, zoom, canonical reset, and explicit Fit Scene framing.
+ * Enforces strict uniform 1:1 mathematical scale (1 unit X = 1 unit Y).
+ * Decoupled from matrix edits and animations to guarantee zero camera jitter.
+ */
 export function CameraControls({
   dimension = 2,
   mode = dimension === 2 ? "orthographic" : "perspective",
@@ -24,10 +30,12 @@ export function CameraControls({
   enablePan = true,
 }: CameraControlsProps) {
   const controlsRef = useRef<OrbitControlsImpl>(null);
-  const { camera } = useThree();
+  const { camera, size } = useThree();
   const cameraResetCounter = useVisualizerStore((s) => s.cameraResetCounter);
+  const fitSceneCounter = useVisualizerStore((s) => s.fitSceneCounter);
+  const fitSceneBounds = useVisualizerStore((s) => s.fitSceneBounds);
 
-  // Position and reset camera on initial mount, dimension toggle, or reset trigger
+  // 1. Canonical Reset Camera Action: restores mathematical default view at (0, 0)
   useEffect(() => {
     if (dimension === 2) {
       const { position, zoom } = CAMERA_DEFAULTS.orthographic2D;
@@ -57,11 +65,54 @@ export function CameraControls({
     }
   }, [cameraResetCounter, camera, dimension, mode]);
 
+  // 2. Explicit Fit Scene Action: invoked only when user deliberately clicks "Fit Scene"
+  useEffect(() => {
+    if (fitSceneCounter === 0) return;
+
+    const bounds = fitSceneBounds ?? { xMin: -6, xMax: 6, yMin: -6, yMax: 6 };
+    const spanX = Math.max(4, Math.abs(bounds.xMax - bounds.xMin));
+    const spanY = Math.max(4, Math.abs(bounds.yMax - bounds.yMin));
+    const margin = 1.25; // 25% comfortable safety margin
+
+    if (
+      dimension === 2 &&
+      "isOrthographicCamera" in camera &&
+      (camera as THREE.OrthographicCamera).isOrthographicCamera
+    ) {
+      const oCam = camera as THREE.OrthographicCamera;
+      // Calculate uniform 1:1 scale zoom based on viewport dimensions
+      const zoomX = size.width / (spanX * margin);
+      const zoomY = size.height / (spanY * margin);
+      // Min ensures uniform scale on both axes without geometric distortion
+      const targetZoom = Math.min(80, Math.max(10, Math.min(zoomX, zoomY)));
+
+      const midX = (bounds.xMin + bounds.xMax) / 2;
+      const midY = (bounds.yMin + bounds.yMax) / 2;
+
+      oCam.position.set(midX, midY, 10);
+      oCam.zoom = targetZoom;
+      oCam.updateProjectionMatrix();
+
+      if (controlsRef.current) {
+        controlsRef.current.target.set(midX, midY, 0);
+        controlsRef.current.update();
+      }
+    }
+  }, [fitSceneCounter, fitSceneBounds, camera, size, dimension]);
+
   // Configure mouse buttons: Left button pans in 2D, rotates in 3D
   const mouseButtons = {
     LEFT: dimension === 2 ? THREE.MOUSE.PAN : THREE.MOUSE.ROTATE,
     MIDDLE: THREE.MOUSE.DOLLY,
     RIGHT: THREE.MOUSE.PAN,
+  };
+
+  // Configure touch gestures for mobile:
+  // In 2D: One finger pans the 2D plane, two fingers pinch-to-zoom.
+  // In 3D: One finger rotates the scene, two fingers pinch-to-zoom / pan.
+  const touches = {
+    ONE: dimension === 2 ? THREE.TOUCH.PAN : THREE.TOUCH.ROTATE,
+    TWO: THREE.TOUCH.DOLLY_PAN,
   };
 
   return (
@@ -72,15 +123,16 @@ export function CameraControls({
       enablePan={enablePan}
       enableDamping={true}
       dampingFactor={0.1}
-      panSpeed={dimension === 2 ? 0.22 : 0.45} // Precise 1:1 drag feel in 2D
-      rotateSpeed={0.5}                         // Smooth 3D rotation
-      zoomSpeed={0.5}                           // Smooth, measured zoom
-      minZoom={16}                              // Clamped minimum zoom-out
-      maxZoom={80}                              // Clamped maximum zoom-in
-      maxDistance={35}
+      panSpeed={dimension === 2 ? 0.33 : 0.45} // Responsive 2D pan
+      rotateSpeed={0.5}
+      zoomSpeed={0.5}
+      minZoom={10}                              // Generous zoom-out
+      maxZoom={90}                              // Deep zoom-in
+      maxDistance={45}
       minDistance={2}
       screenSpacePanning={true}
       mouseButtons={mouseButtons}
+      touches={touches}
       makeDefault
     />
   );

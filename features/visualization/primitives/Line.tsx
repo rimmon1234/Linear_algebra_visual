@@ -14,6 +14,7 @@ interface LineProps {
   dashed?: boolean;
   label?: string;
   visible?: boolean;
+  lod?: "tick" | "secondary" | "primary" | "always";
 }
 
 export function Line({
@@ -24,6 +25,7 @@ export function Line({
   dashed = false,
   label,
   visible = true,
+  lod = "secondary",
 }: LineProps) {
   if (!visible) return null;
 
@@ -51,7 +53,7 @@ export function Line({
     <group name={`line-${id || "generic"}`}>
       <primitive object={lineObj} />
       {label && (
-        <Label text={label} position={midpoint} color={color} />
+        <Label text={label} position={midpoint} color={color} lod={lod} />
       )}
     </group>
   );
