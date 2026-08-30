@@ -64,6 +64,14 @@ export function CameraControls({
     RIGHT: THREE.MOUSE.PAN,
   };
 
+  // Configure touch gestures for mobile & touch-screen emulation:
+  // In 2D: One finger pans the 2D plane, two fingers pinch-to-zoom.
+  // In 3D: One finger rotates the scene, two fingers pinch-to-zoom / pan.
+  const touches = {
+    ONE: dimension === 2 ? THREE.TOUCH.PAN : THREE.TOUCH.ROTATE,
+    TWO: THREE.TOUCH.DOLLY_PAN,
+  };
+
   return (
     <DreiOrbitControls
       ref={controlsRef}
@@ -72,7 +80,7 @@ export function CameraControls({
       enablePan={enablePan}
       enableDamping={true}
       dampingFactor={0.1}
-      panSpeed={dimension === 2 ? 0.22 : 0.45} // Precise 1:1 drag feel in 2D
+      panSpeed={dimension === 2 ? 0.33 : 0.45} // Responsive 1.5x 2D drag speed
       rotateSpeed={0.5}                         // Smooth 3D rotation
       zoomSpeed={0.5}                           // Smooth, measured zoom
       minZoom={16}                              // Clamped minimum zoom-out
@@ -81,6 +89,7 @@ export function CameraControls({
       minDistance={2}
       screenSpacePanning={true}
       mouseButtons={mouseButtons}
+      touches={touches}
       makeDefault
     />
   );

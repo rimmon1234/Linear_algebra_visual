@@ -58,7 +58,7 @@ describe("Visualization Layer Schema & Spec Validation", () => {
     const model = buildSceneModel(CANONICAL_2D_DEMO_SPEC);
     expect(model.dimension).toBe(2);
     expect(model.vectors).toHaveLength(3);
-    expect(model.points).toHaveLength(1);
+    expect(model.points).toHaveLength(0);
     expect(model.lines).toHaveLength(2);
     expect(model.coordinateSystem.showAxes).toBe(true);
     expect(model.coordinateSystem.showGrid).toBe(true);
@@ -72,7 +72,7 @@ describe("Visualization Layer Schema & Spec Validation", () => {
     expect(model.dimension).toBe(3);
     expect(model.vectors).toHaveLength(3);
     expect(model.planes).toHaveLength(1);
-    expect(model.points).toHaveLength(1);
+    expect(model.points).toHaveLength(0);
     expect(model.camera.mode).toBe("perspective");
   });
 

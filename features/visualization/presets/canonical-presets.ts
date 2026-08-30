@@ -2,7 +2,7 @@ import type { VisualizationSpec } from "../schema";
 
 /**
  * Canonical 2D Demo Scene (User Adjustment 8)
- * Demonstrates 2D vectors, parallelogram sum lines, points, and coordinate grid.
+ * Demonstrates 2D vectors, parallelogram sum lines, and coordinate grid without redundant point clutter.
  */
 export const CANONICAL_2D_DEMO_SPEC: VisualizationSpec = {
   version: 1,
@@ -48,14 +48,6 @@ export const CANONICAL_2D_DEMO_SPEC: VisualizationSpec = {
       origin: [0, 0],
     },
     {
-      type: "point",
-      id: "pt-sum",
-      label: "(1.5, 4)",
-      position: [1.5, 4],
-      color: "#f59e0b",
-      radius: 0.1,
-    },
-    {
       type: "line",
       id: "line-1",
       start: [3, 1.5],
@@ -88,7 +80,7 @@ export const CANONICAL_2D_DEMO_SPEC: VisualizationSpec = {
 
 /**
  * Canonical 3D Demo Scene (User Adjustment 8)
- * Demonstrates 3D vectors, 3D plane subspace, points, and 3D coordinate frame.
+ * Demonstrates 3D vectors, 3D plane subspace, and 3D coordinate frame without redundant point clutter.
  */
 export const CANONICAL_3D_DEMO_SPEC: VisualizationSpec = {
   version: 1,
@@ -150,14 +142,6 @@ export const CANONICAL_3D_DEMO_SPEC: VisualizationSpec = {
       ],
       size: 8,
       opacity: 0.25,
-    },
-    {
-      type: "point",
-      id: "pt-u",
-      label: "U",
-      position: [2, 3, 2],
-      color: "#6366f1",
-      radius: 0.12,
     },
   ],
   controls: [],
