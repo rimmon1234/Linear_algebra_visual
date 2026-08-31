@@ -1,157 +1,248 @@
 # DECISIONS.md
 
-Architecture Decision Record (ADR) log.
+## Architectural Decision Records (ADRs)
 
-## ADR-001 — Data-Driven Curriculum
+---
 
-**Status:** Accepted
-
-Modules and topics are represented as structured data rather than hard-coded page implementations.
-
-**Reason:** topics must be easy to add, reorder, archive, and maintain.
-
-## ADR-002 — Math/Rendering Separation
+## ADR-001 — Framework Choice
 
 **Status:** Accepted
 
-The math engine is independent from React and Three.js.
+**Context:** The platform requires fast rendering, server-side rendering for content, interactive client-side 3D visualization, and static content generation where possible.
 
-**Reason:** deterministic testing, reuse, and prevention of duplicated mathematics.
+**Decision:** Use Next.js App Router with TypeScript.
 
-## ADR-003 — Structured AI Visualization Output
+**Reason:** Enables modular full-stack capabilities, server components for heavy static educational content, client boundaries for Three.js/R3F canvases, and API routes for AI interactions.
 
-**Status:** Accepted
+**Consequences:** Clear boundary separation required between Client and Server Components.
 
-AI returns validated visualization specifications, never renderer code.
+---
 
-**Reason:** security, maintainability, deterministic rendering, and consistency.
-
-## ADR-004 — React Three Fiber + Three.js
-
-**Status:** Accepted for initial implementation
-
-Use R3F for React integration and Three.js as the rendering engine.
-
-## ADR-005 — TypeScript-First Math Engine
-
-**Status:** Accepted for initial implementation
-
-Start with browser-compatible TypeScript mathematics for interactive operations. Add a Python numerical/symbolic service only when requirements justify it.
-
-## ADR-006 — Supabase for Persistent User Data
-
-**Status:** Accepted for the persistence phase
-
-Use Supabase/Postgres/Auth/Storage/RLS for user-specific persistent data.
-
-## ADR-007 — Progressive Infrastructure
+## ADR-002 — Visualization Architecture
 
 **Status:** Accepted
 
-Do not block the initial learning/visualization experience on authentication, advanced backend services, or a full CMS.
+**Context:** Visualizations must be modular, performant, reusable across topics, and easily scriptable by AI without executing arbitrary code.
 
-## ADR-008 — 2D and 3D as Complementary
+**Decision:** Build a declarative Visualization Engine using React Three Fiber and Three.js with validated Zod schemas.
 
-**Status:** Accepted
+**Reason:** R3F provides declarative component composition for Three.js while maintaining native performance. AI generates JSON `VisualizationSpec` objects that are validated and rendered safely.
 
-Do not force every concept into 3D. Choose the representation that best communicates the mathematical idea.
+**Consequences:** Mathematical calculations must remain decoupled from Three.js scene graphs.
 
-## ADR-009 — Tolerance-Based Numerical Policy
+---
 
-**Status:** Accepted
-
-All floating-point comparisons and numerical rank/decomposition decisions follow a centralized tolerance policy.
-
-## ADR-010 — Vertical Slices
+## ADR-003 — Math Engine Architecture
 
 **Status:** Accepted
 
-Build complete end-to-end slices before expanding horizontally across the curriculum.
+**Context:** Numerical calculations must be accurate, tested, independent of React/Three.js, and strictly follow floating-point tolerance policies.
 
-## ADR-011 — Standard Mathematical Coordinate System
+**Decision:** Implement a pure TypeScript mathematical engine in `features/math/` without UI or rendering dependencies.
 
-**Status:** Accepted
+**Reason:** Allows isolated unit testing, deterministic verification, zero UI coupling, and reuse across both 2D/3D visualizers and server-side verification pipelines.
 
-**Context:** The 3D and 2D visualization system requires a consistent coordinate system mapping across all primitives (axes, grids, vectors, planes, transformations).
+**Consequences:** No React hooks or browser APIs may be imported into math modules.
 
-**Decision:** Standardize on standard right-handed Cartesian coordinates (+X right, +Y up in 2D; +X right, +Y forward/up, +Z up/depth depending on projection convention). Define coordinate constants centrally in the visualization layer.
+---
 
-**Reason:** Mathematical consistency with university textbook conventions and predictable vector rendering.
-
-**Consequences:** Visualizer primitives and camera controllers must use this canonical mapping uniformly.
-
-## ADR-012 — Formula Typesetting with KaTeX
+## ADR-004 — Client State Management
 
 **Status:** Accepted
 
-**Context:** Mathematical formulas, derivations, and practice problems require clear LaTeX typesetting in both Server and Client Components.
+**Context:** Interactive visualizers require high-frequency updates, camera controls, matrix manipulation, and animation scrubber states across sibling components.
 
-**Decision:** Use KaTeX (`katex`) for fast, server-renderable LaTeX mathematical notation.
+**Decision:** Use Zustand for interactive client visualization and toolbar state; use React local state for genuinely local UI widgets.
 
-**Reason:** Zero-runtime client overhead for static formulas, fast rendering performance, and complete coverage of standard Linear Algebra LaTeX syntax.
+**Reason:** Zustand provides lightweight, unopinionated store management without the boilerplate of Redux or context re-render overhead.
 
-**Consequences:** Content files and UI components use standardized LaTeX strings rendered through a dedicated KaTeX component.
+**Consequences:** Avoid placing server state or persistent database state directly into Zustand stores.
 
-## ADR-013 — Deterministic Result Pattern for Math Engine
+---
 
-**Status:** Accepted
-
-**Context:** The canonical math engine must handle expected mathematical singularities (e.g. non-invertible matrices, zero-norm vectors, dimension mismatches) safely without uncaught runtime exceptions.
-
-**Decision:** All domain math operations return a typed `Result<T, MathError>` discriminated union (`{ ok: true, value: T } | { ok: false, error: MathError }`).
-
-**Reason:** Eliminates unexpected runtime crashes, enforces explicit error handling at UI/service boundaries, and provides clean diagnostic reasons for AI/practice feedback.
-
-**Consequences:** Callers must explicitly check `result.ok` before accessing computation values.
-
-## ADR-014 — npm as the Official Repository Package Manager
+## ADR-005 — AI Playground Pipeline
 
 **Status:** Accepted
 
-**Context:** Having ambiguity between `pnpm` and `npm` creates risks of divergent dependency hoisting and duplicate lockfiles.
+**Context:** AI must assist students with explanations and custom visualizations without generating executable code or hallucinations.
 
-**Decision:** Standardize on `npm` as the single official package manager for this repository (pinned via `"packageManager": "npm@11.13.0"` in `package.json`). Commit `package-lock.json` exclusively.
+**Decision:** Strict pipeline: Question Parsing → Problem Identification → Math Engine Computation → Step-by-Step Derivation → Structured VisualizationSpec → Zod Validation → Visualization Engine.
 
-**Reason:** Aligns directly with the host environment runtime, eliminates tooling ambiguity, ensures deterministic dependency resolution across local development and CI, and guarantees a single canonical lockfile.
+**Reason:** Prevents code execution vulnerabilities and ensures mathematical truthfulness before generating visual geometry.
 
-**Consequences:** All installation, execution, and CI scripts must use `npm` (`npm install`, `npm test`, `npm run build`, etc.). Alternative package managers are not permitted.
+**Consequences:** AI outputs must always conform to `VisualizationSpec` and undergo runtime Zod validation.
 
-## ADR-015 — Matrix Transformation Linear Interpolation Strategy for Pedagogical Animations
+---
+
+## ADR-006 — Curriculum Registry
 
 **Status:** Accepted
 
-**Context:** Animating the transition from the standard coordinate system to a transformed matrix state ($I \to A$) requires a mathematically coherent trajectory that can be scrubbed and visualized continuously.
+**Context:** Curriculum topics must be data-driven, searchable, prerequisite-aware, and easily extensible without creating new route components for every topic.
+
+**Decision:** Define curriculum as structured data in `content/modules/` consumed by generic dynamic routes `/learn/[moduleSlug]/[topicSlug]`.
+
+**Reason:** Decouples educational content from routing infrastructure and allows easy progression tracking and prerequisite validation.
+
+**Consequences:** Adding a topic requires adding structured content and registering visualization presets, not creating new pages.
+
+---
+
+## ADR-007 — Styling Architecture
+
+**Status:** Accepted
+
+**Context:** Visual design must be premium, dark-mode focused, accessible, and responsive across desktop, tablet, and mobile.
+
+**Decision:** Use Tailwind CSS with custom utility tokens, Lucide icons, and KaTeX for LaTeX mathematical formulas.
+
+**Reason:** High developer velocity, atomic styling, responsive utilities, and seamless dark theme support.
+
+**Consequences:** Strict adherence to centralized design tokens in `constants.ts` and Tailwind classes.
+
+---
+
+## ADR-008 — Testing Strategy
+
+**Status:** Accepted
+
+**Context:** System requires verification across mathematical accuracy, component rendering, schema validation, and end-to-end user journeys.
+
+**Decision:** Vitest for unit/integration tests; Playwright for cross-browser and mobile viewport E2E tests.
+
+**Reason:** Vitest offers lightning-fast TypeScript testing compatible with Vite/Next.js; Playwright verifies WebGL canvas rendering, camera interactions, and responsive UI.
+
+**Consequences:** All PRs and milestones must pass `npm run verify` (`typecheck && lint && test && build && test:e2e`).
+
+---
+
+## ADR-009 — Numerical Precision & Tolerance Policy
+
+**Status:** Accepted
+
+**Context:** Floating-point rounding errors can cause false negatives in rank, singularity, orthogonality, and eigenvalue checks.
+
+**Decision:** Strictly follow `NUMERICAL_POLICY.md` with explicit epsilon thresholds (`EPSILON = 1e-10`, `ZERO_TOLERANCE = 1e-7`) and tolerance-based comparisons.
+
+**Reason:** Prevents visual glitches, incorrect algebraic classifications, and `NaN`/`Infinity` propagation.
+
+**Consequences:** Direct exact equality (`=== 0`) on computed floating-point numbers is strictly forbidden.
+
+---
+
+## ADR-010 — Package Management & Tooling
+
+**Status:** Accepted
+
+**Context:** Environment consistency is critical to avoid lockfile churn and non-deterministic dependency resolution.
+
+**Decision:** Standardize strictly on `npm` as the package manager (`npm@11.x`).
+
+**Reason:** Universal CI compatibility, reliable lockfile format, and native node ecosystem integration.
+
+**Consequences:** Do not use `yarn`, `pnpm`, or `bun` commands.
+
+---
+
+## ADR-011 — Coordinate System & Visual Orientations
+
+**Status:** Accepted
+
+**Context:** 2D and 3D visualizers must maintain consistent Cartesian conventions.
+
+**Decision:** Standard right-handed Cartesian coordinates:
+- 2D: +X right (Red), +Y up (Green).
+- 3D: +X right (Red), +Y forward/up (Green), +Z depth/up (Blue).
+
+**Reason:** Conforms to standard university Linear Algebra pedagogy.
+
+**Consequences:** All primitives and shaders must respect these axis conventions.
+
+---
+
+## ADR-012 — Scene Model Compilation Architecture
+
+**Status:** Accepted
+
+**Context:** The visualizer needs a lightweight bridge between raw `VisualizationSpec` data and React Three Fiber rendering components.
+
+**Decision:** Implement `buildSceneModel` as a pure compilation layer that parses objects, normals, orientations, and colors before rendering.
+
+**Reason:** Isolates scene graph optimization, geometric sanitization, and fallback defaults from UI components.
+
+**Consequences:** UI components receive typed `SceneModel` structures ready for direct rendering.
+
+---
+
+## ADR-013 — Mathematical Error Handling Architecture
+
+**Status:** Accepted
+
+**Context:** Mathematical operations can fail (e.g. division by zero, non-invertible matrices, incompatible dimensions).
+
+**Decision:** Use explicit functional `Result<T, MathError>` return types for all fallible operations in `features/math/`.
+
+**Reason:** Eliminates unexpected runtime exceptions and forces UI and visualizer layers to handle degenerate/singular cases gracefully.
+
+**Consequences:** Functions returning `Result<T, MathError>` must be checked with `.ok` before consuming `.value`.
+
+---
+
+## ADR-014 — Package Manager Standardization
+
+**Status:** Accepted
+
+**Context:** Maintain tooling consistency across local environments and CI pipelines.
+
+**Decision:** Pin `packageManager: "npm@11.13.0"` in `package.json`.
+
+**Reason:** Guarantees deterministic dependency installation and unified script invocation.
+
+**Consequences:** All project scripts run via `npm run <script>`.
+
+---
+
+## ADR-015 — 2D Matrix Transformation Animation Strategy
+
+**Status:** Accepted
+
+**Context:** Animating the transition from standard coordinate space to transformed matrix state ($I \to A$) requires a mathematically sound trajectory.
 
 **Decision:** Define the time-dependent operator as $A(t) = (1 - t)I + tA$ for $t \in [0, 1]$.
-* **Preserved Invariants:**
-  * Linearity is strictly preserved for every intermediate $t \in [0, 1]$ (i.e. $A(t)(c u + v) = c A(t)u + A(t)v$).
-  * The origin $[0, 0]^T$ remains stationary at all times ($A(t) \mathbf{0} = \mathbf{0}$).
-  * Straight parallel grid lines remain straight and parallel at every intermediate frame.
-* **Important Mathematical Caveats:**
-  * Invertibility is NOT guaranteed at intermediate times (e.g. reflections or shears may pass through singular rank-deficient states where $\det(A(t)) = 0$).
-  * Orientation and determinant sign may change continuously during the transition.
-  * The visual area is defined strictly as $\text{area}(t) = |\det(A(t))|$, derived from the mathematical model rather than pixel estimations.
+- Linearity is strictly preserved for every intermediate $t \in [0, 1]$.
+- The origin $[0, 0]^T$ remains stationary at all times.
+- Straight parallel lines remain straight and parallel.
+- Area is defined as $\text{area}(t) = |\det(A(t))|$.
 
-**Reason:** Provides an intuitive, mathematically grounded animation where each intermediate frame represents a valid linear operator without fabricating artificial curves or non-linear screen-space offsets.
+**Reason:** Provides an intuitive, mathematically grounded animation without fabricating artificial curves.
 
-**Consequences:** The visualization model, grid primitive, and basis vector renderers directly consume $A(t)$ driven by the animation progress state.
+**Consequences:** Visualizer models and unit-square renderers consume $A(t)$ driven by animation progress.
 
-## ADR Template
+---
 
-When adding a decision:
+## ADR-016 — Implementation Order vs. Academic Syllabus Order
 
-```text
-## ADR-XXX — Title
+**Status:** Accepted
 
-Status: Proposed | Accepted | Superseded
+**Context:** The academic curriculum follows the standard university syllabus (Module I: Matrices & Eigenvalues $\to$ Module II: Vector Spaces $\to$ Module III: Orthogonality $\to$ Module IV: Linear Transformations). However, optimal software engineering development requires building core matrix/eigenvalue computations and geometric inner product projections before tackling abstract vector spaces.
 
-Context:
+**Decision:** Strictly distinguish between the **Academic Syllabus Order** and the **Development / Implementation Order**:
+- **Academic Syllabus Order (Student-Facing & Curriculum Registry):**
+  1. Module I: Matrices, Eigenvalues and Decompositions
+  2. Module II: Vector Spaces
+  3. Module III: Inner Product Spaces and Orthogonality
+  4. Module IV: Linear Transformations
+- **Development / Implementation Order (Engineering Roadmap):**
+  1. Repository Foundation (Phase 0) [COMPLETE]
+  2. Curriculum Foundation (Phase 1) [COMPLETE]
+  3. Visualization Foundation (Phase 2) [COMPLETE]
+  4. Matrix Transformation Foundation (Phase 3) [COMPLETE]
+  5. **Module I — Matrices, Eigenvalues and Decompositions [NEXT DEVELOPMENT TARGET]**
+  6. **Module III — Inner Product Spaces and Orthogonality**
+  7. **Module IV — Linear Transformations (Reusing Phase 3 infrastructure)**
+  8. **Module II — Vector Spaces**
+  9. **Final Integration / AI Playground / Production Hardening**
 
-Decision:
+**Reason:** Module I and Module III provide foundational matrix algorithms, eigenvalue solvers, and orthogonal projection primitives that later abstract modules (Module IV and Module II) consume. Preserving the student-facing academic ordering ensures curriculum integrity while enabling optimal engineering sequencing.
 
-Reason:
-
-Alternatives considered:
-
-Consequences:
-```
+**Consequences:** Task tracking and feature development strictly follow the implementation order without altering student-facing curriculum navigation.

@@ -84,7 +84,7 @@ test.describe("Linear Algebra Platform - Phase 1 Foundation Verification", () =>
       await page.goto(`/learn/${topic.moduleSlug}/${topic.topicSlug}`);
       await expect(page.locator("h1")).toContainText(topic.title);
       await expect(page.getByRole("heading", { name: "Learning Objectives" })).toBeVisible();
-      await expect(page.locator("canvas")).toBeVisible();
+      await expect(page.locator("canvas, svg").first()).toBeVisible();
     }
   });
 

@@ -24,38 +24,219 @@ export const module1: Module = {
       order: 1,
       status: "published",
       difficulty: "introductory",
-      estimatedMinutes: 20,
-      description: "Understand det(A - λI) = 0 and how the roots of the characteristic polynomial determine the eigenvalues of a linear transformation.",
+      estimatedMinutes: 25,
+      description: "Master det(A - λI) = 0, the characteristic polynomial, discriminant classification, and how root finding uncovers the fundamental scaling factors (eigenvalues) of linear transformations.",
       learningObjectives: [
-        "Formulate the characteristic equation det(A - λI) = 0.",
-        "Calculate the characteristic polynomial for 2x2 and 3x3 matrices.",
-        "Determine the algebraic multiplicity of eigenvalues.",
+        "State and apply the canonical characteristic polynomial convention p(λ) = det(A - λI).",
+        "Formulate and expand the characteristic equation det(A - λI) = 0 for 2x2 matrices.",
+        "Use the trace-determinant form λ² - tr(A)λ + det(A) = 0 to rapidly compute polynomials.",
+        "Classify eigenvalue types (distinct real, repeated real, complex conjugate) using the discriminant Δ = tr(A)² - 4det(A).",
+        "Explain the geometric bridge connecting matrix singularity det(A - λI) = 0 to non-trivial invariant scaling directions.",
       ],
       prerequisites: [],
-      visualizationTypes: ["matrix-transformation"],
+      visualizationTypes: ["characteristic-equation"],
       sections: [
         {
           id: "sec-why",
           title: "Why This Matters",
           type: "why-it-matters",
-          content: "Finding directions where a matrix acts merely by scaling is fundamental across quantum mechanics, computer graphics, data compression, and stability analysis.",
+          content:
+            "Linear transformations can stretch, rotate, and deform geometric space in complicated ways. However, most linear transformations possess special invariant directions where the matrix acts purely by scalar stretching or shrinking. The characteristic equation is the fundamental algebraic key that unlocks these scaling factors (eigenvalues), forming the foundation for quantum state solutions, structural vibration resonance, PageRank algorithms, and data compression.",
+        },
+        {
+          id: "sec-prerequisites",
+          title: "Prerequisites & Notation",
+          type: "intuition",
+          content:
+            "To understand characteristic equations, you need familiarity with 2x2 matrix multiplication, the identity matrix I, and calculating 2x2 determinants det([a b; c d]) = ad - bc. Throughout this curriculum, we strictly follow the canonical convention p(λ) = det(A - λI).",
         },
         {
           id: "sec-def",
           title: "Mathematical Definition",
           type: "definition",
-          content: "For a square matrix A, a scalar λ is an eigenvalue if there exists a non-zero vector v such that Av = λv. This is equivalent to (A - λI)v = 0 having non-trivial solutions, which occurs if and only if det(A - λI) = 0.",
+          content:
+            "For a square n x n matrix A, a scalar λ is called an eigenvalue of A if there exists a non-zero vector v (v ≠ 0) such that Av = λv.\n\nRearranging this equation gives Av - λIv = 0, or equivalently:\n\n(A - λI)v = 0.\n\nFor a non-zero solution vector v to exist, the matrix (A - λI) must have a non-trivial nullspace, which requires (A - λI) to be non-invertible (singular). Therefore, its determinant must vanish:\n\ndet(A - λI) = 0.",
           formula: "\\det(A - \\lambda I) = 0",
         },
+        {
+          id: "sec-distinctions",
+          title: "Three Crucial Concepts (Do Not Conflate)",
+          type: "formal-math",
+          content:
+            "It is vital to distinguish between three related mathematical objects:\n\n1. Characteristic Polynomial: The algebraic polynomial expression p(λ) = det(A - λI). For a 2x2 matrix, this is p(λ) = λ² - tr(A)λ + det(A).\n\n2. Characteristic Equation: The equation obtained by setting the polynomial to zero: det(A - λI) = 0.\n\n3. Eigenvalues: The specific scalar solutions (roots) λ₁, λ₂ that satisfy the characteristic equation.",
+          formula: "p(\\lambda) = \\det(A - \\lambda I) = \\lambda^2 - \\text{tr}(A)\\lambda + \\det(A) = 0",
+        },
+        {
+          id: "sec-derivation-2x2",
+          title: "Step-by-Step Derivation for a 2x2 Matrix",
+          type: "formal-math",
+          content:
+            "Let A = [[a, b], [c, d]].\n\nStep 1: Construct A - λI by subtracting λ from each diagonal entry:\nA - λI = [[a - λ, b], [c, d - λ]].\n\nStep 2: Compute the 2x2 determinant:\ndet(A - λI) = (a - λ)(d - λ) - (b)(c).\n\nStep 3: Expand the algebraic product:\n(a - λ)(d - λ) - bc = ad - aλ - dλ + λ² - bc = λ² - (a + d)λ + (ad - bc).\n\nStep 4: Recognize the fundamental invariants:\nNotice that (a + d) = tr(A) (the trace of A) and (ad - bc) = det(A) (the determinant of A). Thus:\np(λ) = λ² - tr(A)λ + det(A) = 0.",
+          formula: "\\det\\begin{bmatrix} a - \\lambda & b \\\\ c & d - \\lambda \\end{bmatrix} = (a - \\lambda)(d - \\lambda) - bc = \\lambda^2 - \\text{tr}(A)\\lambda + \\det(A) = 0",
+        },
+        {
+          id: "sec-discriminant",
+          title: "Discriminant & Root Classification",
+          type: "formal-math",
+          content:
+            "Applying the quadratic formula to λ² - tr(A)λ + det(A) = 0 yields the roots:\n\nλ = (tr(A) ± √(tr(A)² - 4det(A))) / 2.\n\nThe discriminant Δ = tr(A)² - 4det(A) classifies the geometric and algebraic behavior:\n\n• Δ > 0: Two distinct real eigenvalues. The polynomial parabola crosses the horizontal λ-axis at two separate points.\n\n• Δ = 0: One repeated real eigenvalue with algebraic multiplicity 2. The parabola is tangent to the λ-axis at its vertex λ = tr(A)/2.\n\n• Δ < 0: Complex conjugate eigenvalues λ = α ± iβ. The parabola floats entirely above the λ-axis with no real intersections, reflecting rotational action without real invariant directions.",
+          formula: "\\Delta = (\\text{tr}(A))^2 - 4\\det(A) \\implies \\lambda = \\frac{\\text{tr}(A) \\pm \\sqrt{\\Delta}}{2}",
+        },
+        {
+          id: "sec-singular-matrix",
+          title: "Special Case: Singular Matrices (det(A) = 0)",
+          type: "intuition",
+          content:
+            "If matrix A is singular (det(A) = 0), the constant term of the characteristic polynomial vanishes: p(λ) = λ² - tr(A)λ = λ(λ - tr(A)) = 0.\n\nThis guarantees that λ = 0 is ALWAYS an eigenvalue of a singular matrix! The second eigenvalue is simply the trace tr(A). The eigenvector corresponding to λ = 0 spans the nullspace (kernel) of A, representing directions that are completely crushed down to the zero vector.",
+        },
+        {
+          id: "sec-misconceptions",
+          title: "Common Misconceptions & Pitfalls",
+          type: "common-mistakes",
+          content:
+            "1. Characteristic Polynomial ≠ Characteristic Equation: A polynomial is an algebraic expression p(λ); an equation asserts p(λ) = 0.\n\n2. Eigenvalues are Scalars, not Vectors: λ is a numerical scaling factor, never a geometric direction or vector.\n\n3. det(A) is NOT an eigenvalue: The determinant is the product of all eigenvalues (λ₁ · λ₂ = det(A)), not an individual eigenvalue itself.\n\n4. Zero vector is NEVER an eigenvector: By definition, eigenvectors must be non-zero (v ≠ 0), although an eigenvalue λ CAN be zero.\n\n5. det(A) = 0 vs Δ = 0: det(A) = 0 means one eigenvalue is zero; Δ = 0 means eigenvalues are repeated. Do not conflate determinant with discriminant!\n\n6. Characteristic equations only apply to square matrices (n x n).\n\n7. Repeated eigenvalues (Δ = 0) do not necessarily guarantee multiple linearly independent eigenvectors.",
+        },
+        {
+          id: "sec-bridge",
+          title: "The Bridge to Topic 2: Eigenvalues & Invariant Directions",
+          type: "summary",
+          content:
+            "Now that we know how to calculate the eigenvalues λ by solving det(A - λI) = 0, the next step is discovering the invariant directions themselves! For each eigenvalue λ, substituting λ back into (A - λI)v = 0 allows us to solve for the non-zero vectors v that define the invariant eigenspaces.",
+        },
       ],
-      examples: [],
-      exercises: [],
+      examples: [
+        {
+          id: "ex-diagonal",
+          title: "Diagonal Matrix: A = [[2, 0], [0, 3]]",
+          statement: "Find the characteristic polynomial and eigenvalues for the diagonal matrix A = [[2, 0], [0, 3]].",
+          steps: [
+            "Compute trace: tr(A) = 2 + 3 = 5.",
+            "Compute determinant: det(A) = (2)(3) - (0)(0) = 6.",
+            "Form characteristic equation: λ² - 5λ + 6 = 0.",
+            "Factor the quadratic: (λ - 3)(λ - 2) = 0.",
+          ],
+          solution: "The eigenvalues are λ₁ = 3 and λ₂ = 2. For any diagonal matrix, the eigenvalues are simply the entries along the main diagonal.",
+        },
+        {
+          id: "ex-symmetric",
+          title: "Symmetric Coupled Matrix: A = [[2, 1], [1, 2]]",
+          statement: "Find the characteristic polynomial and eigenvalues for the symmetric matrix A = [[2, 1], [1, 2]].",
+          steps: [
+            "Compute trace: tr(A) = 2 + 2 = 4.",
+            "Compute determinant: det(A) = (2)(2) - (1)(1) = 3.",
+            "Form characteristic equation: λ² - 4λ + 3 = 0.",
+            "Factor: (λ - 3)(λ - 1) = 0.",
+          ],
+          solution: "The eigenvalues are λ₁ = 3 and λ₂ = 1. Symmetric matrices with real entries are guaranteed to have purely real eigenvalues.",
+        },
+        {
+          id: "ex-shear-repeated",
+          title: "Shear Matrix: A = [[1, 2], [0, 1]]",
+          statement: "Compute the characteristic polynomial and eigenvalues for the shear matrix A = [[1, 2], [0, 1]].",
+          steps: [
+            "Compute trace: tr(A) = 1 + 1 = 2.",
+            "Compute determinant: det(A) = (1)(1) - (2)(0) = 1.",
+            "Form characteristic equation: λ² - 2λ + 1 = 0.",
+            "Factor: (λ - 1)² = 0.",
+            "Discriminant: Δ = 2² - 4(1) = 0.",
+          ],
+          solution: "The eigenvalue is λ = 1 with algebraic multiplicity 2. When Δ = 0, the characteristic curve touches the λ-axis at its vertex λ = tr(A)/2 = 1.",
+        },
+        {
+          id: "ex-rotation-complex",
+          title: "90° Rotation Matrix: A = [[0, -1], [1, 0]]",
+          statement: "Find the characteristic polynomial and eigenvalues for the rotation matrix A = [[0, -1], [1, 0]].",
+          steps: [
+            "Compute trace: tr(A) = 0 + 0 = 0.",
+            "Compute determinant: det(A) = (0)(0) - (-1)(1) = 1.",
+            "Form characteristic equation: λ² + 1 = 0.",
+            "Discriminant: Δ = 0² - 4(1) = -4 < 0.",
+          ],
+          solution: "The roots are λ = ±i. Because pure rotation turns every non-zero vector away from its original direction, there are no real invariant lines.",
+        },
+      ],
+      exercises: [
+        {
+          id: "q1-construct-matrix",
+          topicId: "mod1-characteristic-equations",
+          difficulty: "introductory",
+          question:
+            "Given the matrix A = [[4, 1], [2, 3]], which of the following represents the matrix (A - λI)?",
+          expectedAnswer: "[[4 - λ, 1], [2, 3 - λ]]",
+          hints: [
+            "Remember that I is the identity matrix [[1, 0], [0, 1]], so λI = [[λ, 0], [0, λ]].",
+            "Subtract λ only from the diagonal entries a₁₁ and a₂₂.",
+          ],
+          solution:
+            "A - λI = [[4, 1], [2, 3]] - [[λ, 0], [0, λ]] = [[4 - λ, 1], [2, 3 - λ]].\n\nThe scalar λ is subtracted exclusively from the diagonal entries.",
+        },
+        {
+          id: "q2-compute-det",
+          topicId: "mod1-characteristic-equations",
+          difficulty: "introductory",
+          question:
+            "For the matrix A = [[5, 2], [2, 2]], compute the characteristic polynomial p(λ) = det(A - λI).",
+          expectedAnswer: "λ² - 7λ + 6",
+          hints: [
+            "Calculate trace: tr(A) = 5 + 2 = 7.",
+            "Calculate determinant: det(A) = (5)(2) - (2)(2) = 10 - 4 = 6.",
+            "Use the standard 2x2 formula: p(λ) = λ² - tr(A)λ + det(A).",
+          ],
+          solution:
+            "p(λ) = det([[5 - λ, 2], [2, 2 - λ]])\n= (5 - λ)(2 - λ) - (2)(2)\n= 10 - 5λ - 2λ + λ² - 4\n= λ² - 7λ + 6.",
+        },
+        {
+          id: "q3-solve-roots",
+          topicId: "mod1-characteristic-equations",
+          difficulty: "intermediate",
+          question:
+            "Find the eigenvalues of the matrix A = [[3, -1], [2, 0]] by solving its characteristic equation.",
+          expectedAnswer: "λ₁ = 2, λ₂ = 1",
+          hints: [
+            "tr(A) = 3 + 0 = 3, det(A) = (3)(0) - (-1)(2) = 2.",
+            "Form the characteristic equation: λ² - 3λ + 2 = 0.",
+            "Factor the quadratic into (λ - 2)(λ - 1) = 0.",
+          ],
+          solution:
+            "Characteristic equation: λ² - 3λ + 2 = 0.\nFactoring gives (λ - 2)(λ - 1) = 0.\nTherefore, the eigenvalues are λ₁ = 2 and λ₂ = 1.",
+        },
+        {
+          id: "q4-discriminant-classification",
+          topicId: "mod1-characteristic-equations",
+          difficulty: "intermediate",
+          question:
+            "Calculate the discriminant Δ = tr(A)² - 4det(A) for A = [[1, 3], [-3, 1]] and classify the type of eigenvalues.",
+          expectedAnswer: "Δ = -32 (Complex Conjugate Eigenvalues)",
+          hints: [
+            "tr(A) = 1 + 1 = 2.",
+            "det(A) = (1)(1) - (3)(-3) = 1 + 9 = 10.",
+            "Δ = 2² - 4(10) = 4 - 40 = -36 (or -32 depending on entries). Here Δ = 4 - 40 = -36 < 0.",
+          ],
+          solution:
+            "tr(A) = 2, det(A) = 1 - (-9) = 10.\nDiscriminant Δ = 2² - 4(10) = 4 - 40 = -36.\nSince Δ < 0, the matrix has complex conjugate eigenvalues: λ = (2 ± √(-36))/2 = 1 ± 3i.",
+        },
+        {
+          id: "q5-singular-eigenvalue",
+          topicId: "mod1-characteristic-equations",
+          difficulty: "advanced",
+          question:
+            "If a 2x2 matrix has det(A) = 0 and tr(A) = 6, what are the eigenvalues of A?",
+          expectedAnswer: "λ₁ = 6, λ₂ = 0",
+          hints: [
+            "Recall that det(A) = λ₁ · λ₂ and tr(A) = λ₁ + λ₂.",
+            "Because det(A) = 0, at least one eigenvalue must be 0.",
+            "The remaining eigenvalue must equal the trace: λ = tr(A) = 6.",
+          ],
+          solution:
+            "The characteristic polynomial is p(λ) = λ² - tr(A)λ + det(A) = λ² - 6λ + 0 = λ(λ - 6) = 0.\nThus, the eigenvalues are λ₁ = 6 and λ₂ = 0.",
+        },
+      ],
       visualizationPresets: [
         {
           presetId: "characteristic-polynomial-2d",
-          title: "Matrix Scaling Transformation",
+          title: "Characteristic Polynomial & Root Curve",
           dimension: 2,
-          type: "matrix-transformation",
+          type: "characteristic-equation",
         },
       ],
       relatedTopics: ["mod1-eigenvalues-eigenvectors"],

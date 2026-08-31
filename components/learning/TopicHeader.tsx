@@ -1,6 +1,9 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import { Clock } from "lucide-react";
 import type { Topic, Module } from "@/features/curriculum/types";
+import { MathText } from "@/components/math/MathText";
 
 interface TopicHeaderProps {
   topic: Topic;
@@ -33,9 +36,9 @@ export function TopicHeader({ topic, module }: TopicHeaderProps) {
         {topic.title}
       </h1>
 
-      <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-        {topic.description}
-      </p>
+      <div className="text-sm sm:text-base text-slate-300 leading-relaxed">
+        <MathText text={topic.description} />
+      </div>
     </div>
   );
 }

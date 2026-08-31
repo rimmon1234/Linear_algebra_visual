@@ -9,6 +9,8 @@ export const VisualizationTypeSchema = z.enum([
   "basis",
   "matrix-transformation",
   "linear-transformation",
+  "characteristic-equation",
+  "characteristic-polynomial",
   "projection",
   "orthogonal-complement",
   "eigenvectors",

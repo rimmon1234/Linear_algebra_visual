@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { VisualizationToolbar } from "./VisualizationToolbar";
 import { VisualizationFallback } from "./VisualizationFallback";
 import { MatrixTransformationVisualizer } from "./MatrixTransformationVisualizer";
+import { CharacteristicEquationExplorer } from "@/components/characteristic/CharacteristicEquationExplorer";
 import type { VisualizationSpec } from "@/features/visualization/schema";
 import {
   CANONICAL_2D_DEMO_SPEC,
@@ -62,6 +63,19 @@ export function VisualizationContainer({
     setMounted(true);
     setStoreDimension(initialDimension);
   }, [initialDimension, setStoreDimension]);
+
+  // If this is a characteristic equation or polynomial topic, mount CharacteristicEquationExplorer
+  const isCharacteristicEquation =
+    type === "characteristic-equation" ||
+    type === "characteristic-polynomial" ||
+    presetId === "characteristic-polynomial-2d" ||
+    presetId === "characteristic-equation-2d" ||
+    initialSpec?.type === "characteristic-equation" ||
+    initialSpec?.type === "characteristic-polynomial";
+
+  if (isCharacteristicEquation) {
+    return <CharacteristicEquationExplorer />;
+  }
 
   // If this is a matrix or linear transformation topic, mount the interactive MatrixTransformationVisualizer
   const isMatrixTransformation =
