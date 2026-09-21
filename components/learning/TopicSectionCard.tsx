@@ -1,7 +1,11 @@
+"use client";
+
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { TopicSection } from "@/features/curriculum/types";
 import { Lightbulb, Info, AlertTriangle, HelpCircle } from "lucide-react";
+import { MathFormula } from "@/components/math/MathFormula";
+import { MathText } from "@/components/math/MathText";
 
 interface TopicSectionCardProps {
   section: TopicSection;
@@ -37,12 +41,12 @@ export function TopicSectionCard({ section }: TopicSectionCardProps) {
           {typeLabels[section.type] || section.type}
         </Badge>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-sm text-slate-300 leading-relaxed">{section.content}</p>
+      <CardContent className="space-y-4 text-sm text-slate-300 leading-relaxed">
+        <MathText text={section.content} />
 
         {section.formula && (
-          <div className="rounded-md bg-slate-950/80 border border-slate-800 p-3 font-mono text-xs sm:text-sm text-indigo-300 overflow-x-auto text-center">
-            <code>{section.formula}</code>
+          <div className="rounded-lg bg-slate-950/90 border border-slate-800/80 p-3.5 my-2 shadow-inner">
+            <MathFormula math={section.formula} inline={false} />
           </div>
         )}
 
@@ -52,7 +56,7 @@ export function TopicSectionCard({ section }: TopicSectionCardProps) {
               const Icon = calloutIcons[section.callout.type] || Info;
               return <Icon className="h-4 w-4 shrink-0 text-indigo-400 mt-0.5" />;
             })()}
-            <span>{section.callout.text}</span>
+            <MathText text={section.callout.text} />
           </div>
         )}
       </CardContent>

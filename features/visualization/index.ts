@@ -8,4 +8,6 @@ export * from "./engine/LinearAlgebraCanvas";
 export * from "./engine/VisualizationRenderer";
 export * from "./engine/WebGLDetector";
 export * from "./camera/CameraControls";
+export * from "./camera/bounds";
 export * from "./presets/canonical-presets";
+

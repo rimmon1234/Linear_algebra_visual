@@ -5,6 +5,7 @@ import { TopicHeader } from "@/components/learning/TopicHeader";
 import { LearningObjectives } from "@/components/learning/LearningObjectives";
 import { TopicSectionCard } from "@/components/learning/TopicSectionCard";
 import { TopicNavigation } from "@/components/learning/TopicNavigation";
+import { PracticeSection } from "@/components/learning/PracticeSection";
 import { VisualizationContainer } from "@/components/visualizer/VisualizationContainer";
 
 interface TopicPageProps {
@@ -68,6 +69,11 @@ export default async function GenericTopicPage({ params }: TopicPageProps) {
             ))}
           </div>
         </div>
+      )}
+
+      {/* Interactive Practice Questions */}
+      {topic.exercises.length > 0 && (
+        <PracticeSection exercises={topic.exercises} />
       )}
 
       {/* Previous / Next Topic Navigation */}

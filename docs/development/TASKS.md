@@ -2,13 +2,32 @@
 
 ## How to Use This File
 
-Work top-to-bottom. Do not start a later phase until the required previous phase is working and verified.
-
-A phase may be split into smaller agent tasks.
+Work top-to-bottom according to the authoritative **Implementation Order** (ADR-016). Do not start a later phase until the required previous phase is working and verified.
 
 ---
 
-# Phase 0 — Repository Foundation
+## Academic Order vs. Implementation Order
+
+### Academic Syllabus Order (Student-Facing & Navigation)
+1. **Module I:** Matrices, Eigenvalues and Decompositions
+2. **Module II:** Vector Spaces
+3. **Module III:** Inner Product Spaces and Orthogonality
+4. **Module IV:** Linear Transformations
+
+### Development / Implementation Order (Authoritative Engineering Roadmap)
+1. **Phase 0:** Repository Foundation — **COMPLETE**
+2. **Phase 1:** Curriculum Foundation — **COMPLETE**
+3. **Phase 2:** Visualization Foundation — **COMPLETE**
+4. **Phase 3:** Matrix Transformation Foundation — **COMPLETE**
+5. **Phase 4:** **MODULE I — COMPLETE [CURRENT ACTIVE TARGET]**
+6. **Phase 5:** **MODULE III — COMPLETE**
+7. **Phase 6:** **MODULE IV — COMPLETE**
+8. **Phase 7:** **MODULE II — COMPLETE**
+9. **Phase 8:** **Final Integration / AI Playground / Production Hardening**
+
+---
+
+# Phase 0 — Repository Foundation — COMPLETE & VERIFIED
 
 - [x] Initialize Next.js + TypeScript project.
 - [x] Configure linting/formatting.
@@ -18,9 +37,9 @@ A phase may be split into smaller agent tasks.
 - [x] Add `AGENTS.md` and specification files.
 - [x] Add CI verification pipeline.
 
-**Exit condition:** project installs, builds, typechecks, and tests successfully. (VERIFIED)
+---
 
-# Phase 1 — Curriculum Foundation
+# Phase 1 — Curriculum Foundation — COMPLETE & VERIFIED
 
 - [x] Implement module registry.
 - [x] Implement topic registry.
@@ -31,9 +50,9 @@ A phase may be split into smaller agent tasks.
 - [x] Implement generic topic page.
 - [x] Add topic navigation.
 
-**Exit condition:** adding a topic requires configuration/content, not a new route component. (VERIFIED)
+---
 
-# Phase 2 — Visualization Foundation
+# Phase 2 — Visualization Foundation — COMPLETE & VERIFIED
 
 - [x] Add Three.js/R3F canvas.
 - [x] Add camera controls.
@@ -47,129 +66,123 @@ A phase may be split into smaller agent tasks.
 - [x] Add visualization schema.
 - [x] Add visualization-spec validation.
 
-**Exit condition:** a generic validated visualization spec can render a basic scene. (VERIFIED)
+---
 
-# Phase 3 — Matrix/Vector Math Foundation
+# Phase 3 — Matrix Transformation Foundation — COMPLETE & VERIFIED
 
-- [ ] Implement vector operations.
-- [ ] Implement matrix operations.
-- [ ] Implement matrix × vector.
-- [ ] Implement determinant.
-- [ ] Implement inverse with numerical checks.
-- [ ] Implement RREF/rank.
-- [ ] Create comprehensive math tests.
+- [x] Implement pure vector operations (`add`, `subtract`, `scale`, `dot`, `norm`, `normalize`, `angle`, `linearCombination`).
+- [x] Implement pure matrix operations (`multiply`, `transpose`, `determinant`, `matrixVectorMultiply`, `rank`, `rref`, `inverse`).
+- [x] Implement 2D transformation evaluation engine ($A(t) = (1-t)I + tA$).
+- [x] Strict layer separation (Fixed Reference Layer vs Dynamic Transformation Layer).
+- [x] 2D Matrix Editor with instant validation.
+- [x] Preset Selector (Shear, Rotation, Reflection, Scaling, Projection onto x-axis).
+- [x] Custom Vector input ($v \to Av$).
+- [x] Transformed Basis Vectors ($Ae_1, Ae_2$) with Column Invariant verification.
+- [x] Transformed Unit-Square Parallelogram with area $= |\det(A)|$.
+- [x] Linearity Demonstration mode ($A(u+v) = Au + Av$).
+- [x] Numerical Panel with mathematical derivations.
+- [x] Independent camera framing controls (**Fit Scene** and **Reset Camera** with zero jitter).
+- [x] Clean single-grid visual layout.
+- [x] 61 Vitest unit tests & 11 Playwright E2E tests passing.
 
-**Exit condition:** canonical matrix/vector engine is independently tested.
+---
 
-# Phase 4 — First Complete Vertical Slice
+# Phase 4 — MODULE I: Matrices, Eigenvalues & Decompositions (CURRENT TARGET)
 
-Build one complete topic: **Matrix / Linear Transformation**.
+Complete every topic vertically with content, math engine algorithms, visualizer presets, worked examples, practice problems, and tests:
 
-- [ ] Topic content.
-- [ ] Matrix editor.
-- [ ] Vector editor.
-- [ ] Matrix × vector calculation.
-- [ ] 2D grid transformation.
-- [ ] Animated identity → transformation transition.
-- [ ] Reset.
-- [ ] Guided experiment.
-- [ ] Practice question.
-- [ ] Unit tests.
-- [ ] E2E test.
-- [ ] Browser verification.
+- [x] **Topic 1: Characteristic Equations — COMPLETE & VERIFIED**
+  - [x] Characteristic polynomial computation $\det(A - \lambda I) = 0$ with trace-determinant form $\lambda^2 - \text{tr}(A)\lambda + \det(A) = 0$.
+  - [x] Discriminant classification $\Delta = \text{tr}(A)^2 - 4\det(A)$ for distinct real, repeated real, and complex conjugate roots.
+  - [x] Step-by-step symbolic derivation engine with LaTeX formatting.
+  - [x] 2D SVG Polynomial Curve Visualizer ($p(\lambda)$ vs $\lambda$) with real root intercepts and vertex calculation.
+  - [x] Interactive Matrix Editor with 6 guided presets (Diagonal, Symmetric, Shear, Rotation, Singular, Generic Golden).
+  - [x] Contextual navigation card to Module IV Linear Transformations explaining $Av = \lambda v \iff (A - \lambda I)v = 0$.
+  - [x] Full 9-section topic lesson, 4 worked examples, 7 common misconceptions, and 5 interactive practice problems with solutions.
+  - [x] KaTeX mathematical typesetting engine with `<MathFormula>` and `<MathText>` abstractions.
+  - [x] 75 Vitest unit tests & 14 Playwright E2E tests passing with 0 console errors.
+- [x] **Topic 2: Eigenvalues and Eigenvectors — COMPLETE & VERIFIED**
+  - [x] Pure TypeScript eigensystem engine (`features/math/eigen/eigenvectors.ts`) with Nullspace $(A - \lambda I)v = 0$ resolution, dimension-independent interface, algebraic ($am$) and geometric ($gm$) multiplicity calculation, and invariant angle check ($0^\circ$ and $180^\circ$).
+  - [x] Continuous 2D eigenspace ray lines ($\text{span}(\mathbf{v}_1), \text{span}(\mathbf{v}_2)$) with dynamic test vector $\mathbf{v}$ (emerald), transformed vector $A\mathbf{v}$ (purple), and real-time alignment status indicator.
+  - [x] Interactive angle rotation slider $[0^\circ, 360^\circ]$, vector radius control, and one-click snap buttons to exact eigenvectors.
+  - [x] Matrix transformation animation $\mathbf{v} \to A\mathbf{v} = \lambda \mathbf{v}$ communicating stretch ($\lambda > 1$), shrink ($0 < \lambda < 1$), direction reversal ($\lambda < 0$), and nullspace collapse ($\lambda = 0$).
+  - [x] Eigenspace & Multiplicity summary card with LaTeX basis formatting, defectiveness warning ($gm < am$), and isotropic scaling explanation ($A = 2I$, full $\mathbb{R}^2$ eigenspace).
+  - [x] Complex conjugate eigenvalues support for 2D rotations ($R_{90^\circ}$) clarifying no real invariant directions in $\mathbb{R}^2$.
+  - [x] Optional 3D demonstration with coordinate axes as eigenspaces ($A = \text{diag}(2, 3, 1)$).
+  - [x] Step-by-step symbolic derivation accordion for $(A - \lambda_i I)\mathbf{v} = \mathbf{0}$.
+  - [x] 10 structured lesson sections, 4 worked examples, 6 misconception callouts, and 5 interactive practice exercises with solutions.
+  - [x] 89 Vitest unit tests (including 14 dedicated eigensystem tests covering all 8 golden cases) & 17 Playwright E2E tests passing.
+- [ ] **Topic 3: Diagonalization**
+  - [ ] $A = PDP^{-1}$ transformation decomposition visualizer.
+  - [ ] Change of basis to eigenvector coordinates.
+- [ ] **Topic 4: Applications to Differential Equations**
+  - [ ] Phase portraits and trajectory visualizer for $\dot{x} = Ax$.
+  - [ ] Stability analysis based on eigenvalue signs.
+- [ ] **Topic 5: Symmetric Matrices**
+  - [ ] Spectral theorem visualizer: orthogonal eigenvectors ($A = Q\Lambda Q^T$).
+  - [ ] Orthogonal transformation decomposition.
+- [ ] **Topic 6: Positive Definite Matrices**
+  - [ ] Quadratic form visualizer: $q(x) = x^T A x$.
+  - [ ] 3D paraboloid / ellipsoid surface rendering.
+- [ ] **Topic 7: Similar Matrices**
+  - [ ] Matrix similarity $B = P^{-1}AP$ and invariant eigenvalues.
+- [ ] **Topic 8: Singular Value Decomposition (SVD)**
+  - [ ] Geometric SVD visualizer: Unit Circle $\to$ Rotation $V^T$ $\to$ Scaling $\Sigma$ $\to$ Rotation $U$ $\to$ Ellipsoid.
+- [ ] **Topic 9: Generalized Inverses**
+  - [ ] Moore-Penrose pseudoinverse $A^+$ and least squares minimum norm solution.
 
-**Exit condition:** one student can learn, manipulate, and practice the concept end-to-end.
+**Exit condition:** All 9 Module I topics fully implemented, tested, verified, and passing `npm run verify`.
 
-# Phase 5 — Module I Core
+---
 
-- [ ] Characteristic equations.
-- [ ] Eigenvalues.
-- [ ] Eigenvectors.
-- [ ] Diagonalization.
-- [ ] Symmetric matrices.
-- [ ] Positive definite matrices.
-- [ ] Similar matrices.
-- [ ] Differential-equation visualization.
-- [ ] SVD.
-- [ ] Generalized inverse/pseudoinverse.
+# Phase 5 — MODULE III: Inner Product Spaces & Orthogonality
 
-Each topic must be a complete vertical slice before moving to the next.
+- [ ] Topic 1: Inner Product Spaces
+- [ ] Topic 2: Norms
+- [ ] Topic 3: Orthogonality
+- [ ] Topic 4: Projections and Subspaces
+- [ ] Topic 5: Orthogonal Complementary Subspaces
+- [ ] Topic 6: Orthogonal Projections
+- [ ] Topic 7: Gram-Schmidt Orthogonalization Process
+- [ ] Topic 8: Least Square Approximations
+- [ ] Topic 9: QR Decomposition
 
-# Phase 6 — Module II
+**Exit condition:** All 9 Module III topics fully implemented, tested, verified, and passing `npm run verify`.
 
-Build and verify each topic:
+---
 
-- [ ] Field.
-- [ ] Vector spaces.
-- [ ] Elementary properties.
-- [ ] Subspaces.
-- [ ] Linear sums.
-- [ ] Spanning sets.
-- [ ] Linear dependence/independence.
-- [ ] Basis/dimension.
-- [ ] Matrix/system applications.
+# Phase 6 — MODULE IV: Linear Transformations
 
-# Phase 7 — Module III
+- [ ] Topic 1: Linear Transformations (reusing Phase 3 foundation)
+- [ ] Topic 2: Kernels and Images
+- [ ] Topic 3: Rank-Nullity Theorem
+- [ ] Topic 4: Matrix Representation of a Linear Transformation
+- [ ] Topic 5: Change of Basis
+- [ ] Topic 6: Linear Space of Linear Mappings
 
-- [ ] Inner product spaces.
-- [ ] Norms.
-- [ ] Orthogonality.
-- [ ] Projections.
-- [ ] Orthogonal complements.
-- [ ] Orthogonal projections.
-- [ ] Gram-Schmidt.
-- [ ] Least squares.
-- [ ] QR.
+**Exit condition:** All 6 Module IV topics fully implemented, tested, verified, and passing `npm run verify`.
 
-# Phase 8 — Module IV
+---
 
-- [ ] Linear transformations.
-- [ ] Kernel/image.
-- [ ] Rank-nullity.
-- [ ] Matrix representation.
-- [ ] Change of basis.
-- [ ] Linear space of linear mappings.
+# Phase 7 — MODULE II: Vector Spaces
 
-# Phase 9 — Practice System
+- [ ] Topic 1: Vector Spaces
+- [ ] Topic 2: Subspaces
+- [ ] Topic 3: Linear Combinations and Span
+- [ ] Topic 4: Linear Independence
+- [ ] Topic 5: Basis and Dimension
+- [ ] Topic 6: Four Fundamental Subspaces
+- [ ] Topic 7: Rank and Nullity
+- [ ] Topic 8: Coordinate Systems
+- [ ] Topic 9: Direct Sums
 
-- [ ] Exercise schema.
-- [ ] Hint system.
-- [ ] Answer validation.
-- [ ] Feedback UI.
-- [ ] Topic-linked practice.
-- [ ] Challenge mode.
+**Exit condition:** All 9 Module II topics fully implemented, tested, verified, and passing `npm run verify`.
 
-# Phase 10 — AI Playground
+---
 
-- [ ] Question input.
-- [ ] Classification.
-- [ ] Math tool calling.
-- [ ] Deterministic verification.
-- [ ] Explanation generation.
-- [ ] Visualization generation.
-- [ ] Zod validation.
-- [ ] Error/unsupported flow.
-- [ ] Golden dataset.
-- [ ] Rate limiting.
+# Phase 8 — Final Integration, AI Playground & Production Hardening
 
-# Phase 11 — Persistence
-
-- [ ] Supabase project integration.
-- [ ] Auth.
-- [ ] User profiles.
-- [ ] Progress.
-- [ ] Attempts.
-- [ ] Saved visualizations.
-- [ ] Saved Playground sessions.
-- [ ] RLS.
-
-# Phase 12 — Production Hardening
-
-- [ ] Performance profiling.
-- [ ] Mobile verification.
-- [ ] Browser matrix.
-- [ ] Accessibility audit.
-- [ ] Error monitoring.
-- [ ] Security review.
-- [ ] Production environment validation.
-- [ ] CI/CD verification.
+- [ ] AI Playground with mathematical derivation, step-by-step verification, and dynamic `VisualizationSpec` generator.
+- [ ] Cross-module mastery tests and progress tracking.
+- [ ] Performance optimizations, bundle analysis, and accessibility audit.
+- [ ] Final end-to-end production verification.

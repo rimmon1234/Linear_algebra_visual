@@ -111,3 +111,26 @@ export const CAMERA_DEFAULTS = {
     far: 1000,
   },
 } as const;
+
+/**
+ * Camera Bounds & Framing Policy
+ * Centralized authority for 2D/3D camera envelopes, 1:1 scaling, and hysteresis thresholds.
+ */
+export const CAMERA_BOUNDS_POLICY = {
+  // Minimum visible world-span: prevents zooming infinitely close on tiny/zero vectors
+  MIN_WORLD_SPAN: 4,
+  // Preferred maximum visible world-span: soft guide for framing; expands dynamically if geometry demands it
+  PREFERRED_MAX_WORLD_SPAN: 40,
+  // Explicit margin factor: paddedSpan = rawSpan * MARGIN_FACTOR (1.25 = 25% comfortable padding)
+  MARGIN_FACTOR: 1.25,
+  // Label cushion in world units
+  LABEL_PADDING: 0.6,
+  // Canonical default world-space span (-6 to +6 in Cartesian world)
+  CANONICAL_2D_SPAN: 12,
+  // Hysteresis threshold: only trigger auto-fit when geometry exceeds current visible bounds by >8%
+  HYSTERESIS_THRESHOLD: 0.08,
+  // Zoom clamps (pixels per unit) for manual or fitted camera operations
+  MIN_ZOOM: 5,
+  MAX_ZOOM: 120,
+} as const;
+
