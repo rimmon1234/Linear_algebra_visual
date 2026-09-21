@@ -246,3 +246,26 @@
 **Reason:** Module I and Module III provide foundational matrix algorithms, eigenvalue solvers, and orthogonal projection primitives that later abstract modules (Module IV and Module II) consume. Preserving the student-facing academic ordering ensures curriculum integrity while enabling optimal engineering sequencing.
 
 **Consequences:** Task tracking and feature development strictly follow the implementation order without altering student-facing curriculum navigation.
+
+---
+
+## ADR-017 — Dual 2D SVG & 3D WebGL Rendering Strategy and Adaptive Framing Architecture
+
+**Status:** Accepted
+
+**Context:** The platform incorporates both deep 3D coordinate transformations and interactive 2D mathematical diagrams (such as polynomial curves, characteristic equations, and 2D invariant eigenspace lines). Phase 2 established a WebGL/Three.js/React Three Fiber engine (`LinearAlgebraCanvas`), while lightweight 2D topics (e.g., `EigenvectorVisualizer2D`, `PolynomialCurveVisualizer`) utilize native SVG. This distinction must be codified to ensure intentional architecture, avoid accidental fragmentation, and guarantee renderer-independence.
+
+**Decision:**
+1. **Renderer-Independent Mathematical Models:** Mathematical logic, eigensystem resolution, and bounding-box computations reside purely in `features/math/` and `features/visualization/camera/` with zero dependencies on SVG, React, or Three.js.
+2. **Lightweight 2D Diagrams via SVG:** Lightweight 2D mathematical visualizers (e.g., 2D eigenspace rays, characteristic polynomial parabolas) may use SVG for crisp vector typography, fast DOM events, instant mounting, and lightweight mobile rendering.
+3. **Heavy 2D / 3D Scenes via WebGL (R3F):** Complex 3D transformations, mesh deformations, multi-plane intersections, and high-frequency matrix animations use the shared React Three Fiber / Three.js engine.
+4. **Adaptive Camera Framing Policy:** All 2D visualizers (SVG and WebGL orthographic) follow a standardized 5-tier camera priority:
+   - Priority 1: Keep important mathematical geometry visible.
+   - Priority 2: Keep origin $(0, 0)$ visible.
+   - Priority 3: Preserve strict 1:1 uniform X/Y scale ($1\text{ unit } X = 1\text{ unit } Y$).
+   - Priority 4: Apply uniform margin padding (`MARGIN_FACTOR = 1.25`) and label buffers.
+   - Priority 5: Center scene as much as possible without sacrificing origin or mathematical geometry.
+5. **Camera-Fit Hysteresis & State Separation:** Camera state (`userCameraState`) remains decoupled from mathematical state ($A, \mathbf{v}$). Slider adjustments and small geometry changes do not trigger automatic refits unless geometry exceeds visible bounds beyond `HYSTERESIS_THRESHOLD`. Preferred bounds (`PREFERRED_MAX_WORLD_SPAN`) act as soft guides and automatically expand when actual geometry demands larger envelopes.
+
+**Consequences:** Mathematical models remain fully portable and testable in Node/Vitest. 2D visualizers remain performant and lightweight without loading unnecessary WebGL contexts where simple SVG projection suffices.
+

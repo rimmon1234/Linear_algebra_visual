@@ -6,7 +6,7 @@ import { useThree } from "@react-three/fiber";
 import { OrbitControls as DreiOrbitControls } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { useVisualizerStore } from "../store/visualizer-store";
-import { CAMERA_DEFAULTS } from "../constants";
+import { CAMERA_DEFAULTS, CAMERA_BOUNDS_POLICY } from "../constants";
 
 interface CameraControlsProps {
   dimension?: 2 | 3;
@@ -69,10 +69,15 @@ export function CameraControls({
   useEffect(() => {
     if (fitSceneCounter === 0) return;
 
-    const bounds = fitSceneBounds ?? { xMin: -6, xMax: 6, yMin: -6, yMax: 6 };
-    const spanX = Math.max(4, Math.abs(bounds.xMax - bounds.xMin));
-    const spanY = Math.max(4, Math.abs(bounds.yMax - bounds.yMin));
-    const margin = 1.25; // 25% comfortable safety margin
+    const bounds = fitSceneBounds ?? {
+      xMin: -CAMERA_BOUNDS_POLICY.CANONICAL_2D_SPAN / 2,
+      xMax: CAMERA_BOUNDS_POLICY.CANONICAL_2D_SPAN / 2,
+      yMin: -CAMERA_BOUNDS_POLICY.CANONICAL_2D_SPAN / 2,
+      yMax: CAMERA_BOUNDS_POLICY.CANONICAL_2D_SPAN / 2,
+    };
+    const spanX = Math.max(CAMERA_BOUNDS_POLICY.MIN_WORLD_SPAN, Math.abs(bounds.xMax - bounds.xMin));
+    const spanY = Math.max(CAMERA_BOUNDS_POLICY.MIN_WORLD_SPAN, Math.abs(bounds.yMax - bounds.yMin));
+    const margin = CAMERA_BOUNDS_POLICY.MARGIN_FACTOR;
 
     if (
       dimension === 2 &&
@@ -84,7 +89,10 @@ export function CameraControls({
       const zoomX = size.width / (spanX * margin);
       const zoomY = size.height / (spanY * margin);
       // Min ensures uniform scale on both axes without geometric distortion
-      const targetZoom = Math.min(80, Math.max(10, Math.min(zoomX, zoomY)));
+      const targetZoom = Math.min(
+        CAMERA_BOUNDS_POLICY.MAX_ZOOM,
+        Math.max(CAMERA_BOUNDS_POLICY.MIN_ZOOM, Math.min(zoomX, zoomY))
+      );
 
       const midX = (bounds.xMin + bounds.xMax) / 2;
       const midY = (bounds.yMin + bounds.yMax) / 2;

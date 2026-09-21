@@ -110,12 +110,26 @@ All project specification documents and ADR records are active and validated:
 
 ---
 
+### Phase 4: Module I — Topic 2: Eigenvalues and Eigenvectors — **COMPLETE & VERIFIED**
+- Pure TypeScript eigensystem engine (`features/math/eigen/eigenvectors.ts`) with Nullspace $(A - \lambda I)v = 0$ resolution, dimension-independent interface, algebraic ($am$) and geometric ($gm$) multiplicity calculation, and invariant angle check ($0^\circ$ and $180^\circ$).
+- Continuous 2D eigenspace ray lines ($\text{span}(\mathbf{v}_1), \text{span}(\mathbf{v}_2)$) with dynamic test vector $\mathbf{v}$ (emerald), transformed vector $A\mathbf{v}$ (purple), and real-time alignment status indicator.
+- Interactive angle rotation slider $[0^\circ, 360^\circ]$, vector radius control, and one-click snap buttons to exact eigenvectors.
+- Matrix transformation animation $\mathbf{v} \to A\mathbf{v} = \lambda \mathbf{v}$ communicating stretch ($\lambda > 1$), shrink ($0 < \lambda < 1$), direction reversal ($\lambda < 0$), and nullspace collapse ($\lambda = 0$).
+- Eigenspace & Multiplicity summary card with LaTeX basis formatting, defectiveness warning ($gm < am$), and isotropic scaling explanation ($A = 2I$, full $\mathbb{R}^2$ eigenspace).
+- Complex conjugate eigenvalues support for 2D rotations ($R_{90^\circ}$) clarifying no real invariant directions in $\mathbb{R}^2$.
+- Optional 3D demonstration with coordinate axes as eigenspaces ($A = \text{diag}(2, 3, 1)$).
+- Step-by-step symbolic derivation accordion for $(A - \lambda_i I)\mathbf{v} = \mathbf{0}$.
+- 10 structured lesson sections, 4 worked examples, 6 misconception callouts, and 5 interactive practice exercises with solutions.
+- Quality Gates: 89 unit tests (14 dedicated eigensystem tests covering all 8 golden cases), 17 Playwright E2E tests passing.
+
+---
+
 ## 4. Current Target
 
 ### Phase 4: MODULE I (Next Topic)
 - [x] Topic 1: Characteristic Equations — **COMPLETE & VERIFIED**
-- [ ] Topic 2: Eigenvalues and Eigenvectors — **NEXT TARGET**
-- [ ] Topic 3: Diagonalization
+- [x] Topic 2: Eigenvalues and Eigenvectors — **COMPLETE & VERIFIED**
+- [ ] Topic 3: Diagonalization — **NEXT TARGET**
 - [ ] Topic 4: Applications to Differential Equations
 - [ ] Topic 5: Symmetric Matrices
 - [ ] Topic 6: Positive Definite Matrices

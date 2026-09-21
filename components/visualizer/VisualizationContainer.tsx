@@ -7,6 +7,7 @@ import { VisualizationToolbar } from "./VisualizationToolbar";
 import { VisualizationFallback } from "./VisualizationFallback";
 import { MatrixTransformationVisualizer } from "./MatrixTransformationVisualizer";
 import { CharacteristicEquationExplorer } from "@/components/characteristic/CharacteristicEquationExplorer";
+import { EigenvaluesExplorer } from "@/components/eigenvectors/EigenvaluesExplorer";
 import type { VisualizationSpec } from "@/features/visualization/schema";
 import {
   CANONICAL_2D_DEMO_SPEC,
@@ -75,6 +76,18 @@ export function VisualizationContainer({
 
   if (isCharacteristicEquation) {
     return <CharacteristicEquationExplorer />;
+  }
+
+  // If this is an eigenvector or eigenvalue topic, mount EigenvaluesExplorer
+  const isEigenvectors =
+    type === "eigenvectors" ||
+    type === "eigenvalue-transformation" ||
+    presetId === "eigenvectors-2d" ||
+    initialSpec?.type === "eigenvectors" ||
+    initialSpec?.type === "eigenvalue-transformation";
+
+  if (isEigenvectors) {
+    return <EigenvaluesExplorer />;
   }
 
   // If this is a matrix or linear transformation topic, mount the interactive MatrixTransformationVisualizer

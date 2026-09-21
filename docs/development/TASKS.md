@@ -101,10 +101,17 @@ Complete every topic vertically with content, math engine algorithms, visualizer
   - [x] Full 9-section topic lesson, 4 worked examples, 7 common misconceptions, and 5 interactive practice problems with solutions.
   - [x] KaTeX mathematical typesetting engine with `<MathFormula>` and `<MathText>` abstractions.
   - [x] 75 Vitest unit tests & 14 Playwright E2E tests passing with 0 console errors.
-- [ ] **Topic 2: Eigenvalues and Eigenvectors**
-  - [ ] Invariant direction visualizer: $(A - \lambda I)v = 0$.
-  - [ ] Vector transformation showing direction preservation ($Av = \lambda v$).
-  - [ ] Algebraic vs geometric multiplicity.
+- [x] **Topic 2: Eigenvalues and Eigenvectors — COMPLETE & VERIFIED**
+  - [x] Pure TypeScript eigensystem engine (`features/math/eigen/eigenvectors.ts`) with Nullspace $(A - \lambda I)v = 0$ resolution, dimension-independent interface, algebraic ($am$) and geometric ($gm$) multiplicity calculation, and invariant angle check ($0^\circ$ and $180^\circ$).
+  - [x] Continuous 2D eigenspace ray lines ($\text{span}(\mathbf{v}_1), \text{span}(\mathbf{v}_2)$) with dynamic test vector $\mathbf{v}$ (emerald), transformed vector $A\mathbf{v}$ (purple), and real-time alignment status indicator.
+  - [x] Interactive angle rotation slider $[0^\circ, 360^\circ]$, vector radius control, and one-click snap buttons to exact eigenvectors.
+  - [x] Matrix transformation animation $\mathbf{v} \to A\mathbf{v} = \lambda \mathbf{v}$ communicating stretch ($\lambda > 1$), shrink ($0 < \lambda < 1$), direction reversal ($\lambda < 0$), and nullspace collapse ($\lambda = 0$).
+  - [x] Eigenspace & Multiplicity summary card with LaTeX basis formatting, defectiveness warning ($gm < am$), and isotropic scaling explanation ($A = 2I$, full $\mathbb{R}^2$ eigenspace).
+  - [x] Complex conjugate eigenvalues support for 2D rotations ($R_{90^\circ}$) clarifying no real invariant directions in $\mathbb{R}^2$.
+  - [x] Optional 3D demonstration with coordinate axes as eigenspaces ($A = \text{diag}(2, 3, 1)$).
+  - [x] Step-by-step symbolic derivation accordion for $(A - \lambda_i I)\mathbf{v} = \mathbf{0}$.
+  - [x] 10 structured lesson sections, 4 worked examples, 6 misconception callouts, and 5 interactive practice exercises with solutions.
+  - [x] 89 Vitest unit tests (including 14 dedicated eigensystem tests covering all 8 golden cases) & 17 Playwright E2E tests passing.
 - [ ] **Topic 3: Diagonalization**
   - [ ] $A = PDP^{-1}$ transformation decomposition visualizer.
   - [ ] Change of basis to eigenvector coordinates.
